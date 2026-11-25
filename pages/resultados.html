@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultados de validación · ZonaLimaSegura</title>
+  <meta name="description" content="Resultados en vivo de la validación de la Landing Page de ZonaLimaSegura con usuarios de los tres segmentos objetivo.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#14283C">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/validacion.css">
+  <script src="../js/validacion-config.js" defer></script>
+  <script src="../js/resultados.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="ZonaLimaSegura, ir a la página principal">
+        <img src="../assets/images/logo.svg" alt="" width="40" height="40">
+        <span>ZonaLimaSegura</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="container dash">
+    <div class="dash__head">
+      <div>
+        <p class="val-eyebrow">Validación con usuarios</p>
+        <h1>Resultados en vivo</h1>
+      </div>
+      <div class="dash__tools">
+        <span class="dash__live" aria-live="polite"><span class="dash__dot" aria-hidden="true"></span><span id="dash-updated">Conectando…</span></span>
+        <label class="val-check small"><input type="checkbox" id="dash-demo"> <span>Incluir demostraciones</span></label>
+      </div>
+    </div>
+    <p class="dash-error" id="dash-error" role="alert" hidden></p>
+
+    <section class="dash-section" aria-labelledby="dash-join">
+      <h2 id="dash-join">Participa desde tu celular</h2>
+      <div class="dash-grid">
+        <div class="dash-card dash-qr">
+          <img src="../assets/images/qr-prueba.png" alt="Código QR de la prueba con usuarios" width="148" height="148">
+          <div><h3>Prueba con usuarios</h3><p class="dash-sub">Para residentes, brigadistas y adultos mayores.</p><code id="dash-url-real"></code></div>
+        </div>
+        <div class="dash-card dash-qr">
+          <img src="../assets/images/qr-demo.png" alt="Código QR de la prueba de demostración" width="148" height="148">
+          <div><h3>Demostración</h3><p class="dash-sub">Para la exposición: se guarda aparte y no cuenta en los resultados.</p><code id="dash-url-demo"></code></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dash-section" aria-labelledby="dash-summary">
+      <h2 id="dash-summary">Resumen</h2>
+      <div class="dash-grid" id="dash-kpis"></div>
+    </section>
+
+    <section class="dash-section" aria-labelledby="dash-tasks">
+      <h2 id="dash-tasks">Pruebas de tareas</h2>
+      <div id="dash-missions"></div>
+    </section>
+
+    <section class="dash-section" aria-labelledby="dash-sus-title">
+      <h2 id="dash-sus-title">Usabilidad percibida (SUS)</h2>
+      <div class="dash-sus" id="dash-sus"></div>
+      <p class="dash-sub">Escala SUS de 0 a 100. El promedio de referencia es 68: por debajo de 51 es deficiente, de 51 a 67 regular, de 68 a 80 bueno y desde 80,3 excelente.</p>
+    </section>
+
+    <section class="dash-section" aria-labelledby="dash-comments-title">
+      <h2 id="dash-comments-title">Comentarios recientes</h2>
+      <div class="dash-comments" id="dash-comments"></div>
+    </section>
+  </main>
+</body>
+</html>

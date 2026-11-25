@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZonaLimaSegura · Prepárate para un sismo en tu barrio</title>
+  <meta name="description" content="ZonaLimaSegura ayuda a las familias de Lima y Callao a conocer el riesgo sísmico de su zona, revisar su vivienda y planificar su evacuación.">
+  <meta name="theme-color" content="#14283C">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../assets/images/logo.svg" type="image/svg+xml">
+  <link rel="preload" href="../assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/poppins-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/data.js" defer></script>
+  <script src="../js/map.js" defer></script>
+  <script src="../js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido principal</a>
+
+  <div class="offline-banner" id="offline-banner" role="status" hidden>
+    <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-wifi-off"/></svg>
+    <span>Sin conexión. Estás viendo la información que guardaste en este dispositivo.</span>
+  </div>
+
+  <!-- ===================== CABECERA ===================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="ZonaLimaSegura, ir al inicio">
+        <img src="../assets/images/logo.svg" alt="" width="40" height="40">
+        <span>ZonaLimaSegura</span>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">
+        <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-menu"/></svg>
+        <span>Menú</span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#residentes">Residentes</a></li>
+          <li><a href="#brigadistas">Brigadistas</a></li>
+          <li><a href="#adultos">Adultos mayores</a></li>
+          <li><a href="#nosotros">Nosotros</a></li>
+        </ul>
+        <!-- HU-33 · Tamaño de letra (disponible en toda la página) -->
+        <div class="font-control" role="group" aria-labelledby="font-label">
+          <span id="font-label" class="font-control__label">
+            <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-text"/></svg>
+            Letra
+          </span>
+          <button type="button" class="font-btn" data-font="1" aria-pressed="true" aria-label="Letra normal">A</button>
+          <button type="button" class="font-btn" data-font="2" aria-pressed="false" aria-label="Letra grande">A+</button>
+          <button type="button" class="font-btn" data-font="3" aria-pressed="false" aria-label="Letra muy grande">A++</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ===================== HERO + ELECCIÓN DE PERFIL ===================== -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Lima Metropolitana y Callao</p>
+          <h1 id="hero-title">Prepárate para un sismo en tu barrio</h1>
+          <p class="lead">Conoce el riesgo de la zona donde vives, revisa tu vivienda con un autodiagnóstico visual y define con tu familia por dónde evacuar. Todo en un lenguaje sencillo y disponible incluso sin internet.</p>
+          <img class="hero-img" src="../assets/images/hero-barrio.svg" width="560" height="420" alt="Mapa de un barrio con una vivienda, una ruta de evacuación marcada y un punto de reunión seguro.">
+        </div>
+
+        <form class="profile-card" id="profile-form" aria-labelledby="profile-title">
+          <h2 id="profile-title">¿Cómo quieres usar ZonaLimaSegura?</h2>
+          <p class="muted">Elige tu perfil y te llevamos a lo que necesitas.</p>
+          <fieldset class="choice-list">
+            <legend class="sr-only">Perfil de usuario</legend>
+            <label class="choice">
+              <input type="radio" name="perfil" value="residentes" checked>
+              <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-home"/></svg></span>
+              <span class="choice__text"><strong>Soy residente</strong><span>Ubica tu vivienda y prepara a tu familia</span></span>
+              <span class="choice__radio" aria-hidden="true"></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="perfil" value="brigadistas">
+              <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-shield"/></svg></span>
+              <span class="choice__text"><strong>Soy brigadista</strong><span>Gestiona rutas y puntos de tu zona</span></span>
+              <span class="choice__radio" aria-hidden="true"></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="perfil" value="adultos">
+              <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-users"/></svg></span>
+              <span class="choice__text"><strong>Soy adulto mayor</strong><span>Rutas y apoyos pensados para ti</span></span>
+              <span class="choice__radio" aria-hidden="true"></span>
+            </label>
+          </fieldset>
+          <button type="submit" class="btn btn--primary btn--block">Continuar</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================== CONTEXTO ===================== -->
+    <section class="context" aria-labelledby="context-title">
+      <div class="container">
+        <h2 id="context-title" class="section-title">¿Por qué prepararnos?</h2>
+        <ul class="stats">
+          <li class="stat"><strong>+275 años</strong><span>sin un sismo de gran magnitud en Lima; el último, en 1746, fue de magnitud estimada 8.8.</span><small>Fuente: El Comercio (2021), con datos del IGP.</small></li>
+          <li class="stat"><strong>68.5 %</strong><span>de las edificaciones estudiadas en Lima entre 2007 y 2014 se construyeron de manera informal.</span><small>Fuente: Espinoza Sifuentes (2024), PUCP.</small></li>
+          <li class="stat"><strong>9.8 millones</strong><span>de personas en 56 distritos de Lima estarían en riesgo muy alto ante un sismo mayor a 8.8.</span><small>Fuente: CENEPRED, citado por Infobae (2026).</small></li>
+        </ul>
+        <ol class="steps" aria-label="Cómo funciona">
+          <li><span class="steps__n" aria-hidden="true">1</span><div><h3>Conoce tu zona</h3><p>Ubica tu vivienda y descubre el nivel de riesgo y el tipo de suelo.</p></div></li>
+          <li><span class="steps__n" aria-hidden="true">2</span><div><h3>Revisa tu vivienda</h3><p>Responde un autodiagnóstico visual de 6 señales en unos 3 minutos.</p></div></li>
+          <li><span class="steps__n" aria-hidden="true">3</span><div><h3>Planifica tu evacuación</h3><p>Elige tu ruta y punto de reunión y guárdalos para usarlos sin internet.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SEGMENTO 1 · RESIDENTES
+         ========================================================= -->
+    <section class="profile-section" id="residentes" aria-labelledby="res-title">
+      <div class="container">
+        <header class="section-head">
+          <span class="section-head__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-home"/></svg></span>
+          <div>
+            <p class="eyebrow">Para residentes y jefes de hogar</p>
+            <h2 id="res-title" class="section-title" tabindex="-1">Hola, prepara tu hogar</h2>
+          </div>
+        </header>
+
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Opciones para residentes">
+            <button role="tab" id="tab-res-zona" aria-controls="panel-res-zona" aria-selected="true">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-pin"/></svg>Mi zona</button>
+            <button role="tab" id="tab-res-diag" aria-controls="panel-res-diag" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-check-square"/></svg>Autodiagnóstico</button>
+            <button role="tab" id="tab-res-mapa" aria-controls="panel-res-mapa" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-map"/></svg>Mapa y rutas</button>
+            <button role="tab" id="tab-res-plan" aria-controls="panel-res-plan" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-users"/></svg>Mi plan familiar</button>
+          </div>
+
+          <!-- ---------- Mi zona · HU-01, HU-02, HU-03 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-res-zona" aria-labelledby="tab-res-zona" tabindex="0">
+            <div class="split">
+              <div class="stack">
+                <form class="card" id="home-form" novalidate>
+                  <h3 class="card__title">Ubica tu vivienda</h3>
+                  <p class="muted">Escribe tu dirección, usa tu ubicación o márcala en el mapa.</p>
+                  <label for="home-search" class="label">Dirección</label>
+                  <div class="input-icon">
+                    <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-search"/></svg>
+                    <input id="home-search" class="input" type="text" list="home-addresses" autocomplete="off" placeholder="Ej.: Jr. Las Flores 245" aria-describedby="home-search-help home-search-error">
+                  </div>
+                  <datalist id="home-addresses"></datalist>
+                  <p id="home-search-help" class="help">Sector demostrativo: prueba con “Jr. Las Flores 245” o “Av. El Sol 150”.</p>
+                  <p id="home-search-error" class="error" role="alert"></p>
+                  <div class="btn-row">
+                    <button type="submit" class="btn btn--primary">Buscar dirección</button>
+                    <button type="button" class="btn btn--secondary" id="home-geo">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-locate"/></svg>Usar mi ubicación</button>
+                    <button type="button" class="btn btn--secondary" id="home-pick" aria-pressed="false">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-pin"/></svg>Marcar en el mapa</button>
+                  </div>
+                  <div class="notice" id="home-status" role="status" aria-live="polite"></div>
+                </form>
+
+                <section class="card risk-card" id="risk-card" aria-labelledby="risk-title">
+                  <div class="card__row">
+                    <h3 class="card__title" id="risk-title">Nivel de riesgo de tu zona</h3>
+                    <span class="chip chip--status" id="risk-chip"><span class="dot" aria-hidden="true"></span><span id="risk-chip-text">Ubica tu vivienda</span></span>
+                  </div>
+                  <p class="risk-headline" id="risk-headline">Cuando ubiques tu vivienda verás aquí el nivel de riesgo.</p>
+                  <ol class="risk-scale" id="risk-scale" aria-label="Escala de riesgo de 1 a 3">
+                    <li data-level="1"><span class="bar"></span><span>Nivel 1 · Bajo</span></li>
+                    <li data-level="2"><span class="bar"></span><span>Nivel 2 · Medio</span></li>
+                    <li data-level="3"><span class="bar"></span><span>Nivel 3 · Alto</span></li>
+                  </ol>
+                  <p id="risk-text" class="muted"></p>
+                </section>
+
+                <section class="card" aria-labelledby="soil-title">
+                  <div class="card__row">
+                    <h3 class="card__title" id="soil-title">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-layers"/></svg>Suelo de mi zona</h3>
+                    <label class="switch">
+                      <input type="checkbox" id="soil-toggle" checked>
+                      <span class="switch__track" aria-hidden="true"></span>
+                      <span>Ver en el mapa</span>
+                    </label>
+                  </div>
+                  <p id="soil-current" class="soil-current">Ubica tu vivienda para conocer el tipo de suelo.</p>
+                  <ul class="legend-list" id="soil-legend"></ul>
+                </section>
+              </div>
+
+              <div class="map-wrap">
+                <div class="map-toolbar">
+                  <span class="map-caption" id="res-zona-caption">Sector demostrativo · San Juan de Lurigancho</span>
+                </div>
+                <div class="map-box" id="pick-hint-res" hidden>
+                  <p class="pick-hint"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-info"/></svg>Haz clic en el mapa sobre tu calle. Con teclado: enfoca el mapa, muévete con las flechas y pulsa Enter.</p>
+                </div>
+                <svg class="map" id="map-res-zona" focusable="false"></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Autodiagnóstico · HU-04, HU-05, HU-06, HU-07 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-res-diag" aria-labelledby="tab-res-diag" tabindex="0" hidden>
+            <!-- Inicio -->
+            <div class="diag-view" id="diag-intro">
+              <div class="split split--center">
+                <div class="illus-box"><img src="../assets/images/senal-grietas.svg" width="320" height="220" alt="Ilustración de un muro con una grieta marcada"></div>
+                <div class="stack">
+                  <h3 class="h-lg">Revisa tu vivienda</h3>
+                  <p class="lead-sm">Te mostraremos 6 señales que pueden indicar que tu casa es más vulnerable ante un sismo. Solo tienes que mirar y responder.</p>
+                  <ul class="check-list">
+                    <li><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-clock"/></svg>Unos 3 minutos</li>
+                    <li><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-eye"/></svg>Con ejemplos visuales de cada señal</li>
+                    <li><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-info"/></svg>No reemplaza la evaluación de un ingeniero</li>
+                  </ul>
+                  <div class="btn-row">
+                    <button type="button" class="btn btn--primary" id="diag-start">Empezar autodiagnóstico</button>
+                    <button type="button" class="btn btn--secondary" id="diag-show-signs">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-eye"/></svg>Ver señales antes de empezar</button>
+                  </div>
+                  <div class="notice" id="diag-last" hidden></div>
+                </div>
+              </div>
+              <div class="signs-catalog" id="signs-catalog" hidden>
+                <h4 class="h-md">Señales de vulnerabilidad</h4>
+                <ul class="signs-grid" id="signs-grid"></ul>
+              </div>
+            </div>
+
+            <!-- Pasos -->
+            <form class="diag-view" id="diag-step" hidden novalidate>
+              <div class="progress-head">
+                <p class="muted" id="diag-progress-text">Paso 1 de 6</p>
+                <div class="progress" role="progressbar" aria-labelledby="diag-progress-text" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><span id="diag-progress-bar"></span></div>
+              </div>
+              <div class="split">
+                <figure class="illus-box">
+                  <img id="diag-img" src="../assets/images/senal-grietas.svg" width="320" height="220" alt="">
+                  <figcaption><button type="button" class="link-btn" id="diag-example">Ver ejemplo de la señal</button></figcaption>
+                </figure>
+                <fieldset class="stack question">
+                  <legend class="h-lg" id="diag-question">¿Ves grietas en los muros?</legend>
+                  <p class="muted" id="diag-hint"></p>
+                  <div class="option-list">
+                    <label class="option"><input type="radio" name="diag-answer" value="si"><span>Sí, la veo</span></label>
+                    <label class="option"><input type="radio" name="diag-answer" value="no"><span>No la veo</span></label>
+                    <label class="option"><input type="radio" name="diag-answer" value="nose"><span>No estoy seguro</span></label>
+                  </div>
+                  <p class="error" id="diag-error" role="alert"></p>
+                  <div class="btn-row btn-row--end">
+                    <button type="button" class="btn btn--secondary" id="diag-prev">Anterior</button>
+                    <button type="submit" class="btn btn--primary" id="diag-next">Continuar</button>
+                  </div>
+                </fieldset>
+              </div>
+            </form>
+
+            <!-- Resultado + recomendaciones -->
+            <div class="diag-view" id="diag-result" hidden>
+              <div class="split">
+                <section class="card result-card" aria-labelledby="diag-result-title">
+                  <div class="gauge" id="diag-gauge" aria-hidden="true"><span></span></div>
+                  <h3 class="h-lg" id="diag-result-title" tabindex="-1">Resultado</h3>
+                  <p class="chip chip--status" id="diag-result-chip"></p>
+                  <p id="diag-result-text"></p>
+                  <ul class="answers" id="diag-answers"></ul>
+                </section>
+                <section class="card" aria-labelledby="diag-rec-title">
+                  <h3 class="card__title" id="diag-rec-title">Recomendaciones para ti</h3>
+                  <ul class="rec-list" id="diag-recs"></ul>
+                  <div class="btn-row">
+                    <button type="button" class="btn btn--primary" data-goto="tab-res-mapa">Ver mi ruta de evacuación</button>
+                    <button type="button" class="btn btn--secondary" id="diag-repeat">Repetir autodiagnóstico</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Mapa y rutas · HU-08, HU-09, HU-10, HU-13 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-res-mapa" aria-labelledby="tab-res-mapa" tabindex="0" hidden>
+            <div class="split split--map">
+              <div class="stack">
+                <div class="segmented" role="group" aria-label="Qué quieres ver">
+                  <button type="button" class="segmented__btn" data-resview="rutas" aria-pressed="true">Rutas de evacuación</button>
+                  <button type="button" class="segmented__btn" data-resview="puntos" aria-pressed="false">Puntos de reunión</button>
+                </div>
+                <div class="notice notice--info" id="res-need-home" hidden>
+                  <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-info"/></svg>
+                  <span>Primero ubica tu vivienda en <button type="button" class="link-btn" data-goto="tab-res-zona">Mi zona</button>. Mientras tanto usamos una dirección de ejemplo.</span>
+                </div>
+
+                <div id="res-rutas-view">
+                  <h3 class="card__title">Rutas desde tu vivienda</h3>
+                  <ul class="item-list" id="res-route-list" aria-label="Rutas de evacuación"></ul>
+                  <section class="card detail" id="res-route-detail" hidden aria-labelledby="res-route-title">
+                    <h3 class="card__title" id="res-route-title" tabindex="-1"></h3>
+                    <dl class="facts" id="res-route-facts"></dl>
+                    <ol class="steps-mini" id="res-route-steps"></ol>
+                    <button type="button" class="btn btn--primary btn--block" id="res-route-choose">Elegir como mi ruta</button>
+                  </section>
+                </div>
+
+                <div id="res-puntos-view" hidden>
+                  <h3 class="card__title">Puntos de reunión cercanos</h3>
+                  <ul class="item-list" id="res-point-list" aria-label="Puntos de reunión"></ul>
+                </div>
+              </div>
+
+              <div class="map-wrap">
+                <div class="map-toolbar">
+                  <span class="map-caption">Mapa preventivo</span>
+                  <ul class="legend-inline" aria-label="Leyenda">
+                    <li><span class="lg lg--route" aria-hidden="true"></span>Ruta</li>
+                    <li><span class="lg lg--point" aria-hidden="true"></span>Punto de reunión</li>
+                    <li><span class="lg lg--hazard" aria-hidden="true"></span>Peligro</li>
+                    <li><span class="lg lg--block" aria-hidden="true"></span>Vía bloqueada</li>
+                  </ul>
+                </div>
+                <svg class="map" id="map-res" focusable="false"></svg>
+                <section class="card offline-card" aria-labelledby="res-off-title">
+                  <div>
+                    <h3 class="card__title" id="res-off-title"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-download"/></svg>Mapa sin conexión</h3>
+                    <p class="muted" id="res-off-text">Guarda tu mapa con rutas y puntos de reunión para verlo aunque no haya internet.</p>
+                  </div>
+                  <div class="offline-actions">
+                    <div class="progress" role="progressbar" aria-label="Progreso de descarga del mapa" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden id="res-off-progress"><span></span></div>
+                    <button type="button" class="btn btn--dark" data-offline="res">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-download"/></svg>Guardar mapa</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Mi plan familiar · HU-15 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-res-plan" aria-labelledby="tab-res-plan" tabindex="0" hidden>
+            <div class="split split--map">
+              <section class="card plan-card" aria-labelledby="plan-title">
+                <h3 class="h-lg" id="plan-title">Mi plan familiar</h3>
+                <p class="muted">Revisa la ruta y el punto de reunión que elegiste. Compártelo con tu familia.</p>
+                <dl class="plan-list" id="plan-list"></dl>
+                <div class="btn-row">
+                  <button type="button" class="btn btn--primary" id="plan-print">
+                    <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-print"/></svg>Imprimir mi plan</button>
+                  <button type="button" class="btn btn--secondary" data-goto="tab-res-mapa">Cambiar ruta o punto</button>
+                </div>
+              </section>
+              <div class="map-wrap">
+                <svg class="map" id="map-plan" focusable="false"></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SEGMENTO 2 · BRIGADISTAS
+         ========================================================= -->
+    <section class="profile-section profile-section--alt" id="brigadistas" aria-labelledby="brig-title">
+      <div class="container">
+        <header class="section-head">
+          <span class="section-head__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-shield"/></svg></span>
+          <div>
+            <p class="eyebrow">Para brigadistas y personal de GRD</p>
+            <h2 id="brig-title" class="section-title" tabindex="-1">Gestiona el mapa de tu zona</h2>
+          </div>
+        </header>
+
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Opciones para brigadistas">
+            <button role="tab" id="tab-brig-mapa" aria-controls="panel-brig-mapa" aria-selected="true">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-map"/></svg>Mapa de la zona</button>
+            <button role="tab" id="tab-brig-reg" aria-controls="panel-brig-reg" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-plus"/></svg>Registrar</button>
+            <button role="tab" id="tab-brig-gest" aria-controls="panel-brig-gest" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-check-square"/></svg>Gestión y validación</button>
+          </div>
+
+          <!-- ---------- Mapa centralizado · HU-26, HU-20, HU-27 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-brig-mapa" aria-labelledby="tab-brig-mapa" tabindex="0">
+            <div class="chips" role="group" aria-label="Capas visibles del mapa">
+              <button type="button" class="chip chip--toggle" data-layer="rutas" aria-pressed="true">Rutas</button>
+              <button type="button" class="chip chip--toggle" data-layer="puntos" aria-pressed="true">Puntos</button>
+              <button type="button" class="chip chip--toggle" data-layer="peligros" aria-pressed="true">Peligros</button>
+              <button type="button" class="chip chip--toggle" data-layer="vias" aria-pressed="true">Vías</button>
+            </div>
+            <div class="split split--map-right">
+              <div class="map-wrap">
+                <svg class="map" id="map-brig" focusable="false"></svg>
+                <ul class="legend-inline legend-inline--box" aria-label="Leyenda">
+                  <li><span class="lg lg--route" aria-hidden="true"></span>Ruta validada</li>
+                  <li><span class="lg lg--route-dash" aria-hidden="true"></span>Ruta pendiente o en revisión</li>
+                  <li><span class="lg lg--point" aria-hidden="true"></span>Punto</li>
+                  <li><span class="lg lg--hazard" aria-hidden="true"></span>Peligro</li>
+                  <li><span class="lg lg--block" aria-hidden="true"></span>Vía bloqueada</li>
+                </ul>
+              </div>
+              <div class="stack">
+                <section class="card detail" id="brig-detail" aria-live="polite" aria-labelledby="brig-detail-title">
+                  <h3 class="card__title" id="brig-detail-title" tabindex="-1">Selecciona un elemento</h3>
+                  <div id="brig-detail-body"><p class="muted">Haz clic (o usa Tab y Enter) sobre una ruta, punto, peligro o vía del mapa para ver su detalle. También puedes elegirlo de la lista.</p></div>
+                </section>
+                <section class="card" aria-labelledby="brig-list-title">
+                  <h3 class="card__title" id="brig-list-title">Elementos registrados</h3>
+                  <ul class="item-list item-list--compact" id="brig-list"></ul>
+                </section>
+                <section class="card offline-card" aria-labelledby="brig-off-title">
+                  <div>
+                    <h3 class="card__title" id="brig-off-title"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-download"/></svg>Mapa para campo</h3>
+                    <p class="muted" id="brig-off-text">Guarda las rutas y puntos para consultarlos sin conexión durante tus recorridos.</p>
+                  </div>
+                  <div class="offline-actions">
+                    <div class="progress" role="progressbar" aria-label="Progreso de descarga del mapa" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden id="brig-off-progress"><span></span></div>
+                    <button type="button" class="btn btn--dark" data-offline="brig">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-download"/></svg>Guardar mapa</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Registrar · HU-17, HU-18, HU-19, HU-22 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-brig-reg" aria-labelledby="tab-brig-reg" tabindex="0" hidden>
+            <fieldset class="reg-types">
+              <legend class="card__title">¿Qué quieres registrar?</legend>
+              <label class="reg-type"><input type="radio" name="reg-type" value="ruta" checked><span><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-route"/></svg>Ruta de evacuación</span></label>
+              <label class="reg-type"><input type="radio" name="reg-type" value="punto"><span><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-flag"/></svg>Punto de reunión</span></label>
+              <label class="reg-type"><input type="radio" name="reg-type" value="peligro"><span><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-alert"/></svg>Zona de peligro</span></label>
+              <label class="reg-type"><input type="radio" name="reg-type" value="via"><span><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-block"/></svg>Vía bloqueada</span></label>
+            </fieldset>
+            <div class="split split--map-right">
+              <div class="map-wrap">
+                <p class="pick-hint" id="reg-hint"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-info"/></svg><span id="reg-hint-text"></span></p>
+                <svg class="map map--pick" id="map-reg" tabindex="0" focusable="true"></svg>
+              </div>
+              <form class="card stack" id="reg-form" novalidate>
+                <h3 class="card__title" id="reg-form-title">Registrar ruta de evacuación</h3>
+                <p class="muted" id="reg-pos">Ubicación: aún no marcada en el mapa.</p>
+
+                <div class="reg-fields" data-for="ruta punto peligro">
+                  <label class="label" for="reg-name" id="reg-name-label">Nombre de la ruta</label>
+                  <input class="input" id="reg-name" type="text" maxlength="60" aria-describedby="reg-name-error">
+                  <p class="error" id="reg-name-error"></p>
+                </div>
+                <div class="reg-fields" data-for="ruta">
+                  <label class="label" for="reg-dest">Punto de reunión de destino</label>
+                  <select class="input" id="reg-dest"></select>
+                  <div class="btn-row">
+                    <button type="button" class="btn btn--secondary btn--sm" id="reg-undo">Deshacer último tramo</button>
+                    <button type="button" class="btn btn--secondary btn--sm" id="reg-clear">Borrar trazo</button>
+                  </div>
+                </div>
+                <div class="reg-fields" data-for="punto">
+                  <label class="label" for="reg-capacity">Capacidad aproximada (personas)</label>
+                  <input class="input" id="reg-capacity" type="number" min="10" max="5000" inputmode="numeric" aria-describedby="reg-capacity-error">
+                  <p class="error" id="reg-capacity-error"></p>
+                  <label class="check"><input type="checkbox" id="reg-accessible"><span>Accesible para personas con movilidad reducida</span></label>
+                </div>
+                <div class="reg-fields" data-for="peligro">
+                  <label class="label" for="reg-hazard-type">Tipo de peligro</label>
+                  <select class="input" id="reg-hazard-type">
+                    <option value="">Selecciona una opción</option>
+                    <option>Poste inclinado</option>
+                    <option>Cables sueltos</option>
+                    <option>Muro en mal estado</option>
+                    <option>Desnivel peligroso</option>
+                    <option>Material inflamable</option>
+                  </select>
+                  <p class="error" id="reg-hazard-error"></p>
+                </div>
+                <div class="reg-fields" data-for="via">
+                  <label class="label" for="reg-edge">Tramo de calle</label>
+                  <select class="input" id="reg-edge" aria-describedby="reg-edge-help"></select>
+                  <p class="help" id="reg-edge-help">También puedes hacer clic sobre la calle en el mapa.</p>
+                  <label class="label" for="reg-reason">Motivo del bloqueo</label>
+                  <select class="input" id="reg-reason">
+                    <option>Escombros</option>
+                    <option>Cables caídos</option>
+                    <option>Obras en la vía</option>
+                    <option>Comercio ambulatorio</option>
+                    <option>Vehículos estacionados</option>
+                  </select>
+                </div>
+                <div class="reg-fields" data-for="ruta punto peligro via">
+                  <label class="label" for="reg-desc">Descripción u observación (opcional)</label>
+                  <textarea class="input" id="reg-desc" rows="2" maxlength="160"></textarea>
+                </div>
+                <p class="error" id="reg-pos-error" role="alert"></p>
+                <button type="submit" class="btn btn--primary btn--block" id="reg-submit">Guardar registro</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ---------- Gestión y validación · HU-24 (+ HU-20) ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-brig-gest" aria-labelledby="tab-brig-gest" tabindex="0" hidden>
+            <div class="segmented" role="group" aria-label="Filtrar rutas por estado">
+              <button type="button" class="segmented__btn" data-gest="pendientes" aria-pressed="true">Por validar</button>
+              <button type="button" class="segmented__btn" data-gest="validadas" aria-pressed="false">Validadas</button>
+              <button type="button" class="segmented__btn" data-gest="todas" aria-pressed="false">Todas</button>
+            </div>
+            <div class="split split--map-right">
+              <ul class="item-list" id="gest-list" aria-label="Rutas registradas"></ul>
+              <section class="card detail" id="gest-detail" aria-labelledby="gest-title">
+                <h3 class="card__title" id="gest-title" tabindex="-1">Selecciona una ruta</h3>
+                <div id="gest-body"><p class="muted">Elige una ruta de la lista para revisarla y validarla.</p></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SEGMENTO 3 · ADULTOS MAYORES Y MOVILIDAD REDUCIDA
+         ========================================================= -->
+    <section class="profile-section senior" id="adultos" aria-labelledby="sen-title">
+      <div class="container">
+        <header class="section-head">
+          <span class="section-head__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-users"/></svg></span>
+          <div>
+            <p class="eyebrow">Para adultos mayores y personas con movilidad reducida</p>
+            <h2 id="sen-title" class="section-title" tabindex="-1">Hola, ¿qué necesitas hoy?</h2>
+          </div>
+        </header>
+
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Opciones para adultos mayores">
+            <button role="tab" id="tab-sen-inicio" aria-controls="panel-sen-inicio" aria-selected="true">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-home"/></svg>Inicio</button>
+            <button role="tab" id="tab-sen-rutas" aria-controls="panel-sen-rutas" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-route"/></svg>Rutas accesibles</button>
+            <button role="tab" id="tab-sen-apoyos" aria-controls="panel-sen-apoyos" aria-selected="false" tabindex="-1">
+              <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-users"/></svg>Mis apoyos</button>
+          </div>
+
+          <!-- ---------- Inicio accesible · HU-34, HU-48, HU-33 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-sen-inicio" aria-labelledby="tab-sen-inicio" tabindex="0">
+            <div class="quick-grid">
+              <button type="button" class="quick" data-quick="mi-ruta">
+                <span class="quick__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-route"/></svg></span>
+                <span class="quick__text"><strong>Mi ruta</strong><span id="quick-route-sub">Ve tu camino seguro</span></span>
+                <svg class="icon quick__chev" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-chevron-right"/></svg>
+              </button>
+              <button type="button" class="quick" data-quick="punto">
+                <span class="quick__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-flag"/></svg></span>
+                <span class="quick__text"><strong>Punto de reunión</strong><span id="quick-point-sub">Dónde encontrarte</span></span>
+                <svg class="icon quick__chev" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-chevron-right"/></svg>
+              </button>
+              <button type="button" class="quick" data-quick="apoyos">
+                <span class="quick__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-users"/></svg></span>
+                <span class="quick__text"><strong>Mis apoyos</strong><span id="quick-support-sub">Familiares y vecinos</span></span>
+                <svg class="icon quick__chev" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-chevron-right"/></svg>
+              </button>
+              <button type="button" class="quick" data-quick="compartir">
+                <span class="quick__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-share"/></svg></span>
+                <span class="quick__text"><strong>Compartir ubicación</strong><span>Avisa dónde estás</span></span>
+                <svg class="icon quick__chev" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-chevron-right"/></svg>
+              </button>
+              <button type="button" class="quick quick--dark" data-quick="rutas">
+                <span class="quick__icon"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-route"/></svg></span>
+                <span class="quick__text"><strong>Rutas accesibles</strong><span>Caminos sin escaleras ni obstáculos</span></span>
+                <svg class="icon quick__chev" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-chevron-right"/></svg>
+              </button>
+            </div>
+
+            <section class="card font-card" aria-labelledby="font-card-title">
+              <div>
+                <h3 class="card__title" id="font-card-title"><svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-text"/></svg>Letra grande</h3>
+                <p class="muted">Elige el tamaño que te sea más cómodo. Se aplica a toda la página y se recuerda en este dispositivo.</p>
+              </div>
+              <div class="font-big" role="group" aria-label="Tamaño de letra">
+                <button type="button" class="font-btn font-btn--lg" data-font="1" aria-pressed="true">A<span class="sr-only"> normal</span></button>
+                <button type="button" class="font-btn font-btn--lg" data-font="2" aria-pressed="false">A+<span class="sr-only"> grande</span></button>
+                <button type="button" class="font-btn font-btn--lg" data-font="3" aria-pressed="false">A++<span class="sr-only"> muy grande</span></button>
+              </div>
+            </section>
+          </div>
+
+          <!-- ---------- Rutas accesibles · HU-35, HU-36, HU-39, HU-40, HU-41 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-sen-rutas" aria-labelledby="tab-sen-rutas" tabindex="0" hidden>
+            <div class="split split--map">
+              <div class="stack">
+                <label class="switch switch--lg">
+                  <input type="checkbox" id="sen-nostairs" checked>
+                  <span class="switch__track" aria-hidden="true"></span>
+                  <span>Mostrar solo rutas sin escaleras</span>
+                </label>
+                <ul class="item-list item-list--lg" id="sen-route-list" aria-label="Rutas accesibles"></ul>
+                <div class="empty" id="sen-empty" hidden>
+                  <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-search"/></svg>
+                  <p><strong>Sin resultados</strong><br>No hay rutas sin escaleras desde tu vivienda.</p>
+                  <button type="button" class="btn btn--secondary" id="sen-empty-reset">Ver todas las rutas</button>
+                </div>
+                <section class="card detail detail--lg" id="sen-detail" hidden aria-labelledby="sen-detail-title">
+                  <h3 class="h-lg" id="sen-detail-title" tabindex="-1"></h3>
+                  <ul class="chips chips--static" id="sen-detail-chips"></ul>
+                  <div id="sen-detail-body"></div>
+                  <div class="btn-col">
+                    <button type="button" class="btn btn--primary btn--block" id="sen-save">
+                      <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-download"/></svg>Guardar sin conexión</button>
+                    <button type="button" class="btn btn--secondary btn--block" id="sen-alt">Ver ruta alternativa</button>
+                  </div>
+                  <div class="progress" role="progressbar" aria-label="Progreso de guardado de la ruta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden id="sen-off-progress"><span></span></div>
+                  <div class="notice" id="sen-status" role="status" aria-live="polite"></div>
+                </section>
+                <section class="card detail detail--lg detail--alt" id="sen-alt-box" hidden aria-labelledby="sen-alt-title">
+                  <h3 class="card__title" id="sen-alt-title" tabindex="-1">Ruta alternativa accesible</h3>
+                  <div id="sen-alt-body"></div>
+                  <div class="btn-col">
+                    <button type="button" class="btn btn--primary btn--block" id="sen-alt-choose">Elegir esta alternativa</button>
+                    <button type="button" class="btn btn--secondary btn--block" id="sen-alt-close">Volver a mi ruta</button>
+                  </div>
+                </section>
+              </div>
+              <div class="map-wrap">
+                <svg class="map" id="map-sen" focusable="false"></svg>
+                <ul class="legend-inline legend-inline--box" aria-label="Leyenda">
+                  <li><span class="lg lg--route" aria-hidden="true"></span>Ruta elegida</li>
+                  <li><span class="lg lg--alt" aria-hidden="true"></span>Alternativa</li>
+                  <li><span class="lg lg--slope" aria-hidden="true"></span>Desnivel</li>
+                  <li><span class="lg lg--obstacle" aria-hidden="true"></span>Obstáculo</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Mis apoyos · HU-42, HU-43 ---------- -->
+          <div class="tabpanel" role="tabpanel" id="panel-sen-apoyos" aria-labelledby="tab-sen-apoyos" tabindex="0" hidden>
+            <div class="split">
+              <form class="card stack" id="fam-form" novalidate aria-labelledby="fam-title">
+                <h3 class="h-lg" id="fam-title">Registrar familiar de apoyo</h3>
+                <p class="muted">Será tu contacto en caso de emergencia.</p>
+                <div>
+                  <label class="label" for="fam-name">Nombre completo <span aria-hidden="true">*</span></label>
+                  <input class="input input--lg" id="fam-name" type="text" autocomplete="name" required aria-describedby="fam-name-error">
+                  <p class="error" id="fam-name-error"></p>
+                </div>
+                <div>
+                  <label class="label" for="fam-rel">Parentesco <span aria-hidden="true">*</span></label>
+                  <select class="input input--lg" id="fam-rel" required aria-describedby="fam-rel-error"></select>
+                  <p class="error" id="fam-rel-error"></p>
+                </div>
+                <div>
+                  <label class="label" for="fam-phone">Celular <span aria-hidden="true">*</span></label>
+                  <input class="input input--lg" id="fam-phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9XX XXX XXX" required aria-describedby="fam-phone-help fam-phone-error">
+                  <p class="help" id="fam-phone-help">9 dígitos, empieza con 9.</p>
+                  <p class="error" id="fam-phone-error"></p>
+                </div>
+                <label class="check check--lg"><input type="checkbox" id="fam-main"><span>Es mi contacto principal</span></label>
+                <p class="help">Los campos con * son obligatorios.</p>
+                <button type="submit" class="btn btn--primary btn--block btn--lg">Guardar familiar</button>
+                <div class="notice" id="fam-status" role="status" aria-live="polite"></div>
+              </form>
+
+              <div class="stack">
+                <section class="card" aria-labelledby="sup-title">
+                  <h3 class="card__title" id="sup-title">Mis apoyos registrados</h3>
+                  <ul class="item-list item-list--compact" id="sup-list"></ul>
+                </section>
+                <section class="card stack" id="share-card" aria-labelledby="share-title">
+                  <h3 class="h-lg" id="share-title" tabindex="-1">Compartir mi ubicación</h3>
+                  <p class="muted">Elige a quién avisar. Se enviará un mensaje con tu ubicación y tu punto de reunión.</p>
+                  <fieldset>
+                    <legend class="label">Enviar a</legend>
+                    <div class="stack-sm" id="share-contacts"></div>
+                  </fieldset>
+                  <p class="error" id="share-error" role="alert"></p>
+                  <button type="button" class="btn btn--primary btn--block btn--lg" id="share-btn">
+                    <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-share"/></svg>Compartir ubicación</button>
+                  <div class="share-result" id="share-result" hidden>
+                    <p class="notice notice--ok" role="status" id="share-status"></p>
+                    <label class="label" for="share-msg">Mensaje</label>
+                    <textarea class="input" id="share-msg" rows="3" readonly></textarea>
+                    <div class="btn-row" id="share-links"></div>
+                    <button type="button" class="btn btn--secondary btn--block" id="share-stop">Dejar de compartir</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NOSOTROS ===================== -->
+    <section class="about" id="nosotros" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div>
+          <h2 id="about-title" class="section-title">Sobre ZonaLimaSegura</h2>
+          <p>Somos un equipo de estudiantes de Ingeniería de Sistemas de Información e Ingeniería de Software de la UPC. Convertimos la información técnica del suelo y del riesgo sísmico en algo fácil de entender, para que cada familia sepa cómo está su vivienda y por dónde evacuar.</p>
+          <p class="muted small">Los mapas, rutas y niveles de riesgo de esta página son datos de demostración de un sector esquemático. No reemplazan la evaluación de un profesional ni la información oficial del CISMID, INDECI o tu municipalidad.</p>
+        </div>
+        <ul class="team" aria-label="Equipo">
+          <li>Lescano Pajuelo, Stephano Jhamill</li>
+          <li>Quispe Perez, Karin Mirella</li>
+          <li>Ramos Loayza, Sergio Daniel</li>
+          <li>Reyes Trujillo, Yery Benjamin</li>
+          <li>Rodriguez Diaz, Marcelo Fabian</li>
+          <li>Tomas Bautista, Kiara Alexandra</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand brand--light" href="#inicio"><img src="../assets/images/logo.svg" alt="" width="32" height="32"><span>ZonaLimaSegura</span></a>
+      <p>En una emergencia llama al <a href="tel:116">116</a> (Bomberos) o al <a href="tel:105">105</a> (Policía).</p>
+      <p class="small">HCI for UX Design · UPC · 2026</p>
+    </div>
+  </footer>
+
+  <!-- Diálogo reutilizable (explicaciones, ejemplos y confirmaciones) -->
+  <dialog class="modal" id="modal" aria-labelledby="modal-title">
+    <form method="dialog" class="modal__inner">
+      <div class="modal__head">
+        <h2 class="card__title" id="modal-title">Título</h2>
+        <button class="icon-btn" value="cancel" aria-label="Cerrar">
+          <svg class="icon" aria-hidden="true"><use href="../assets/icons/sprite.svg#i-x"/></svg></button>
+      </div>
+      <div class="modal__body" id="modal-body"></div>
+      <div class="modal__actions" id="modal-actions"></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">Activa JavaScript para usar los mapas y formularios interactivos.</p></noscript>
+</body>
+</html>

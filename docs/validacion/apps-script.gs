@@ -82,105 +82,165 @@ function doGet() {
 }
 
 /**
- * Crea (o rehace) la pestaña "Resumen" con las estadísticas que pide el handbook para 6.2:
- * resultados por misión y por segmento (%, tiempo, errores, "No pudo") y SUS por segmento, con gráficos.
- * Son fórmulas: se actualiza sola con cada participante. Ejecutar a mano una vez desde el editor.
+ * Crea (o rehace) el tablero de la validación (6.2) en dos pestañas:
+ *  - "Resumen": tarjetas con los totales, avance por segmento y resultados por misión (con barras de color).
+ *  - "Gráficos": participantes por segmento, resultado de las misiones, % por misión y SUS por segmento.
+ * Son fórmulas: se actualiza solo con cada participante. Ejecutar a mano desde el editor cuando cambie el diseño.
  */
 function crearResumen() {
   const ss = SpreadsheetApp.openById(HOJA_ID);
   hoja_(HOJA_P, P); hoja_(HOJA_M, M);
-  const vieja = ss.getSheetByName('Resumen');
-  if (vieja) ss.deleteSheet(vieja);
+  ['Resumen', 'Gráficos'].forEach(n => { const v = ss.getSheetByName(n); if (v) ss.deleteSheet(v); });
+  const C = { navy: '#14283C', orange: '#C4501A', green: '#2E7D5B', blue: '#2F6FB0', soft: '#F1F4F7', head: '#E4E9EF', muted: '#5F6E7E' };
   const h = ss.insertSheet('Resumen', 0);
-  const okM = '((Misiones!$C$2:$C="real")+($B$2*(Misiones!$C$2:$C="demo")))';
-  const okP = '((Participantes!$C$2:$C="real")+($B$2*(Participantes!$C$2:$C="demo")))';
-  const cab = a1 => h.getRange(a1).setFontWeight('bold').setBackground('#E4E9EF').setWrap(true).setVerticalAlignment('middle');
+  h.setHiddenGridlines(true);
+  h.getRange('A1:J40').setFontFamily('Poppins').setVerticalAlignment('middle').setFontColor(C.navy);
+  [150, 100, 250, 95, 110, 150, 90, 90, 110, 110].forEach((w, i) => h.setColumnWidth(i + 1, w));
 
-  h.getRange('A1').setValue('Resumen de la validación con usuarios (6.2)').setFontWeight('bold').setFontSize(14);
-  h.getRange('A2').setValue('Incluir demostraciones');
-  h.getRange('B2').insertCheckboxes().setValue(false);
-  h.getRange('C2').setValue('Sin marcar = solo participantes reales (lo que va al informe). Se actualiza solo.').setFontColor('#666666');
+  // Solo cuentan participantes reales; con la casilla J2 marcada también las demostraciones
+  const okM = '((Misiones!$C$2:$C="real")+$J$2*(Misiones!$C$2:$C="demo"))';
+  const okP = '((Participantes!$C$2:$C="real")+$J$2*(Participantes!$C$2:$C="demo"))';
+  const bar = (cell, color, max) => '=IF(' + cell + '="","",SPARKLINE(' + cell + ',{"charttype","bar";"max",' + max + ';"color1","' + color + '"}))';
+  const interp = cell => '=IF(' + cell + '="","",IFS(' + cell + '>=80.3,"Excelente",' + cell + '>=68,"Bueno",' + cell + '>=51,"Regular",TRUE,"Deficiente"))';
+  const titulo = (a1, txt) => h.getRange(a1).merge().setValue(txt).setFontSize(13).setFontWeight('bold');
+  const cab = a1 => h.getRange(a1).setFontWeight('bold').setBackground(C.head).setWrap(true).setHorizontalAlignment('center');
 
-  // Tabla 1: por misión
-  h.getRange('A4').setValue('Resultados por misión').setFontWeight('bold');
-  h.getRange('A5:J5').setValues([['Segmento', 'Misión', 'Qué debía hacer', 'HU', 'Intentos', 'Completadas', 'No pudo',
-    '% completadas', 'Tiempo promedio (s)', 'Errores promedio']]);
-  cab('A5:J5');
-  const mis = [
-    ['Residentes', 'R1', 'Conocer el riesgo de su zona', 'HU-01, HU-02'],
-    ['Residentes', 'R2', 'Revisar su vivienda', 'HU-04 a HU-07'],
-    ['Residentes', 'R3', 'Acordar por dónde evacuar', 'HU-09, HU-10'],
-    ['Residentes', 'R4', 'Ver su plan sin internet', 'HU-13'],
-    ['Brigadistas', 'B1', 'Avisar de una calle bloqueada', 'HU-22'],
-    ['Brigadistas', 'B2', 'Agregar un punto de reunión', 'HU-18'],
-    ['Brigadistas', 'B3', 'Dejar lista una ruta revisada', 'HU-24'],
-    ['Brigadistas', 'B4', 'Tener el mapa sin señal', 'HU-27'],
-    ['Adultos mayores', 'A1', 'Leer mejor la página', 'HU-33'],
-    ['Adultos mayores', 'A2', 'Encontrar una ruta sin escaleras', 'HU-35, HU-36, HU-39'],
-    ['Adultos mayores', 'A3', 'Registrar a un familiar', 'HU-42'],
-    ['Adultos mayores', 'A4', 'Avisar dónde está', 'HU-43']
-  ];
-  h.getRange(6, 1, mis.length, 4).setValues(mis);
-  h.getRange(6, 5, mis.length, 6).setFormulas(mis.map((m, i) => {
-    const r = 6 + i, es = '(Misiones!$E$2:$E=$B' + r + ')*' + okM;
-    return [
-      '=SUMPRODUCT(' + es + ')',
-      '=SUMPRODUCT(' + es + '*(Misiones!$H$2:$H="Completada"))',
-      '=E' + r + '-F' + r,
-      '=IF(E' + r + '=0,0,F' + r + '/E' + r + ')',
-      '=IF(E' + r + '=0,"—",SUMPRODUCT(' + es + '*Misiones!$I$2:$I)/E' + r + ')',
-      '=IF(E' + r + '=0,"—",SUMPRODUCT(' + es + '*Misiones!$J$2:$J)/E' + r + ')'
-    ];
-  }));
+  // Encabezado
+  h.getRange('A1:J1').merge().setValue('ZonaLimaSegura · Validación con usuarios').setBackground(C.navy).setFontColor('#FFFFFF')
+    .setFontSize(18).setFontWeight('bold').setHorizontalAlignment('left');
+  h.setRowHeight(1, 52);
+  h.getRange('A2:H2').merge().setValue('Se actualiza sola con cada participante. Solo cuenta participantes reales.')
+    .setFontColor(C.muted).setFontSize(9);
+  h.getRange('I2').setValue('Incluir demo').setHorizontalAlignment('right').setFontColor(C.muted).setFontSize(9);
+  h.getRange('J2').insertCheckboxes().setValue(false);
 
-  // Tabla 2: por segmento y total
-  h.getRange('A20').setValue('Resultados por segmento').setFontWeight('bold');
-  h.getRange('A21:J21').setValues([['Segmento', 'Participantes', 'Meta', 'Misiones intentadas', '% misiones completadas',
-    'Misiones "No pudo"', 'Tiempo promedio por misión (s)', 'Errores promedio por misión', 'SUS promedio', 'Interpretación SUS']]);
-  cab('A21:J21');
-  const segs = [['Residentes', 'residentes'], ['Brigadistas', 'brigadistas'], ['Adultos mayores', 'adultos'], ['Total', '']];
-  h.getRange(22, 1, segs.length, 1).setValues(segs.map(s => [s[0]]));
-  h.getRange(22, 2, segs.length, 9).setFormulas(segs.map((s, i) => {
-    const r = 22 + i;
+  // Fila de totales (segmentos) que alimenta las tarjetas: filas 10 a 13
+  const segs = [['Residentes', 'residentes'], ['Brigadistas', 'brigadistas'], ['Adultos mayores', 'adultos']];
+  const T = 13;
+
+  // Tarjetas (filas 4 a 6)
+  const tarjeta = (c1, c2, color, etiqueta, valor, formato, sub) => {
+    const fila = n => { const r = h.getRange(c1 + n + ':' + c2 + n); return c1 === c2 ? r : r.merge(); };
+    fila(4).setValue(etiqueta).setFontSize(9).setFontWeight('bold');
+    fila(5).setFormula(valor).setNumberFormat(formato).setFontSize(24).setFontWeight('bold');
+    fila(6).setFormula(sub).setFontSize(9);
+    h.getRange(c1 + '4:' + c2 + '6').setBackground(color).setFontColor('#FFFFFF').setHorizontalAlignment('center');
+  };
+  tarjeta('A', 'B', C.navy, 'PARTICIPANTES', '=B' + T, '0', '="de 30 · meta 10 por segmento"');
+  tarjeta('C', 'C', C.green, 'MISIONES COMPLETADAS', '=IF(E' + T + '="","—",E' + T + ')', '0%', '="de las misiones intentadas"');
+  tarjeta('D', 'F', C.orange, 'SUS PROMEDIO (0 a 100)', '=IF(H' + T + '="","—",H' + T + ')', '0.0', '=IF(H' + T + '="","Aún sin respuestas",I' + T + ')');
+  tarjeta('G', 'J', C.blue, 'TIEMPO PROMEDIO POR MISIÓN', '=IFERROR(SUMPRODUCT(' + okM + '*Misiones!$I$2:$I)/SUMPRODUCT(' + okM + '),"—")', '0" s"',
+    '="Pistas usadas: "&SUMPRODUCT(' + okM + '*(Misiones!$K$2:$K="Sí"))');
+  h.setRowHeight(5, 44);
+
+  // Avance por segmento (filas 8 a 13)
+  titulo('A8:J8', 'Avance por segmento');
+  h.getRange('A9:J9').setValues([['Segmento', 'Participantes', 'Avance hacia la meta', 'Meta', '% misiones completadas', '', '"No pudo"', 'SUS promedio', 'Interpretación', '']]);
+  h.getRange('E9:F9').merge(); h.getRange('I9:J9').merge();
+  cab('A9:J9');
+  segs.concat([['Total', '']]).forEach((s, i) => {
+    const r = 10 + i;
     const sm = (s[1] ? '(Misiones!$D$2:$D="' + s[1] + '")*' : '') + okM;
     const sp = (s[1] ? '(Participantes!$D$2:$D="' + s[1] + '")*' : '') + okP;
-    return [
+    const meta = s[1] ? 10 : 30;
+    h.getRange(r, 1).setValue(s[0]);
+    h.getRange(r, 2, 1, 9).setFormulas([[
       '=SUMPRODUCT(' + sp + ')',
-      '=' + (s[1] ? 10 : 30),
-      '=SUMPRODUCT(' + sm + ')',
-      '=IF(D' + r + '=0,0,SUMPRODUCT(' + sm + '*(Misiones!$H$2:$H="Completada"))/D' + r + ')',
+      '=SPARKLINE(MIN(1,B' + r + '/' + meta + '),{"charttype","bar";"max",1;"color1","' + C.orange + '";"color2","' + C.head + '"})',
+      String(meta),
+      '=IFERROR(SUMPRODUCT(' + sm + '*(Misiones!$H$2:$H="Completada"))/SUMPRODUCT(' + sm + '),"")',
+      bar('E' + r, C.green, 1),
       '=SUMPRODUCT(' + sm + '*(Misiones!$H$2:$H="No pudo"))',
-      '=IF(D' + r + '=0,"—",SUMPRODUCT(' + sm + '*Misiones!$I$2:$I)/D' + r + ')',
-      '=IF(D' + r + '=0,"—",SUMPRODUCT(' + sm + '*Misiones!$J$2:$J)/D' + r + ')',
-      '=IF(B' + r + '=0,"—",SUMPRODUCT(' + sp + '*Participantes!$U$2:$U)/B' + r + ')',
-      '=IF(ISNUMBER(I' + r + '),IFS(I' + r + '>=80.3,"Excelente",I' + r + '>=68,"Bueno",I' + r + '>=51,"Regular",TRUE,"Deficiente"),"—")'
+      '=IFERROR(SUMPRODUCT(' + sp + '*Participantes!$U$2:$U)/B' + r + ',"")',
+      interp('H' + r),
+      ''
+    ]]);
+    h.getRange(r, 9, 1, 2).merge();
+  });
+  h.getRange('A13:J13').setFontWeight('bold').setBorder(true, null, null, null, null, null, C.navy, SpreadsheetApp.BorderStyle.SOLID);
+
+  // Resultados por misión (filas 15 a 28)
+  titulo('A15:J15', 'Resultados por misión');
+  h.getRange('A16:J16').setValues([['Segmento', 'Misión', 'Qué debía hacer', 'Intentos', '% completadas', '', '"No pudo"', 'Usó pista', 'Tiempo prom. (s)', 'Errores prom.']]);
+  h.getRange('E16:F16').merge();
+  cab('A16:J16');
+  const mis = [
+    ['Residentes', 'R1', 'Conocer el riesgo de su zona'], ['Residentes', 'R2', 'Revisar su vivienda'],
+    ['Residentes', 'R3', 'Elegir su ruta de evacuación'], ['Residentes', 'R4', 'Ver su plan sin internet'],
+    ['Brigadistas', 'B1', 'Avisar de una calle bloqueada'], ['Brigadistas', 'B2', 'Agregar un punto de reunión'],
+    ['Brigadistas', 'B3', 'Validar una ruta de los vecinos'], ['Brigadistas', 'B4', 'Tener el mapa sin señal'],
+    ['Adultos mayores', 'A1', 'Agrandar la letra'], ['Adultos mayores', 'A2', 'Encontrar una ruta sin escaleras'],
+    ['Adultos mayores', 'A3', 'Registrar a un familiar'], ['Adultos mayores', 'A4', 'Avisar dónde está']
+  ];
+  h.getRange(17, 1, mis.length, 3).setValues(mis);
+  h.getRange(17, 4, mis.length, 7).setFormulas(mis.map((m, i) => {
+    const r = 17 + i, es = '(Misiones!$E$2:$E=$B' + r + ')*' + okM;
+    return [
+      '=SUMPRODUCT(' + es + ')',
+      '=IF(D' + r + '=0,"",SUMPRODUCT(' + es + '*(Misiones!$H$2:$H="Completada"))/D' + r + ')',
+      bar('E' + r, C.green, 1),
+      '=IF(D' + r + '=0,"",SUMPRODUCT(' + es + '*(Misiones!$H$2:$H="No pudo")))',
+      '=IF(D' + r + '=0,"",SUMPRODUCT(' + es + '*(Misiones!$K$2:$K="Sí")))',
+      '=IF(D' + r + '=0,"",SUMPRODUCT(' + es + '*Misiones!$I$2:$I)/D' + r + ')',
+      '=IF(D' + r + '=0,"",SUMPRODUCT(' + es + '*Misiones!$J$2:$J)/D' + r + ')'
     ];
   }));
-  h.getRange('A25:J25').setFontWeight('bold');
-  h.getRange('A27').setValue('SUS: 80.3 o más = Excelente · 68 a 80.2 = Bueno (68 es el promedio) · 51 a 67.9 = Regular · menos de 51 = Deficiente.')
-    .setFontColor('#666666');
+  // Franjas suaves por segmento para leer la tabla de un vistazo
+  [[17, '#FFFFFF'], [21, C.soft], [25, '#FFFFFF']].forEach(([r, c]) => h.getRange(r, 1, 4, 10).setBackground(c));
+  h.getRange('A30:J30').merge().setValue('SUS: 80.3 o más = Excelente · 68 a 80.2 = Bueno (68 es el promedio mundial) · 51 a 67.9 = Regular · menos de 51 = Deficiente.')
+    .setFontColor(C.muted).setFontSize(9);
 
   // Formatos
-  h.getRange('H6:H17').setNumberFormat('0%');
-  h.getRange('E22:E25').setNumberFormat('0%');
-  h.getRange('I6:J17').setNumberFormat('0.0');
-  h.getRange('G22:I25').setNumberFormat('0.0');
-  [h.getRange('A5:J17'), h.getRange('A21:J25')].forEach(r => r.setBorder(true, true, true, true, true, true, '#9AA8B6', null));
-  h.setColumnWidth(1, 130); h.setColumnWidth(2, 90); h.setColumnWidth(3, 230); h.setColumnWidth(4, 130);
-  h.setColumnWidths(5, 6, 110);
-  h.setRowHeight(5, 42); h.setRowHeight(21, 42);
+  h.getRange('E10:E13').setNumberFormat('0%'); h.getRange('E17:E28').setNumberFormat('0%');
+  h.getRange('H10:H13').setNumberFormat('0.0'); h.getRange('I17:J28').setNumberFormat('0.0');
+  h.getRange('B10:J13').setHorizontalAlignment('center'); h.getRange('B17:B28').setHorizontalAlignment('center');
+  h.getRange('D17:J28').setHorizontalAlignment('center');
+  h.getRange('A10:J13').setBorder(null, null, true, null, null, true, '#D3DBE3', SpreadsheetApp.BorderStyle.SOLID);
+  h.getRange('A17:J28').setBorder(null, null, true, null, null, true, '#D3DBE3', SpreadsheetApp.BorderStyle.SOLID);
+  for (let r = 10; r <= 28; r++) h.setRowHeight(r, 28);
+  // Interpretación SUS en color
+  const reglas = [['Excelente', '#D7EFE3', C.green], ['Bueno', '#DCE9F7', C.blue], ['Regular', '#FBE6DA', C.orange], ['Deficiente', '#F8D7D7', '#B42318']]
+    .map(([t, bg, fg]) => SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(t).setBackground(bg).setFontColor(fg).setBold(true)
+      .setRanges([h.getRange('I10:I13'), h.getRange('D6:F6')]).build());
+  h.setConditionalFormatRules(reglas);
   h.setFrozenRows(2);
 
-  // Gráficos (a la derecha de las tablas)
-  const graf = (tipo, x, y, titulo, eje, color, fila) => h.insertChart(h.newChart().setChartType(tipo)
-    .addRange(h.getRange(x)).addRange(h.getRange(y))
-    .setOption('title', titulo).setOption('legend', { position: 'none' }).setOption('colors', [color])
-    .setOption(tipo === Charts.ChartType.BAR ? 'hAxis' : 'vAxis', eje)
-    .setPosition(fila, 12, 0, 0).build());
-  graf(Charts.ChartType.BAR, 'B5:B17', 'H5:H17', '% de participantes que completó cada misión',
-    { minValue: 0, maxValue: 1, format: 'percent' }, '#14283C', 4);
-  graf(Charts.ChartType.COLUMN, 'A21:A24', 'E21:E24', '% de misiones completadas por segmento',
-    { minValue: 0, maxValue: 1, format: 'percent' }, '#2E7D5B', 24);
-  graf(Charts.ChartType.COLUMN, 'A21:A24', 'I21:I24', 'SUS promedio por segmento (68 = promedio)',
-    { minValue: 0, maxValue: 100 }, '#C0392B', 44);
+  // Pestaña de gráficos
+  const g = ss.insertSheet('Gráficos', 1);
+  g.setHiddenGridlines(true);
+  g.getRange('A1:L1').merge().setValue('Gráficos de la validación').setBackground(C.navy).setFontColor('#FFFFFF')
+    .setFontFamily('Poppins').setFontSize(18).setFontWeight('bold');
+  g.setRowHeight(1, 52);
+  // Datos de apoyo (columna A:B, abajo, para no estorbar)
+  g.getRange('A40:B40').setValues([['Resultado', 'Misiones']]).setFontWeight('bold');
+  g.getRange('A41:A42').setValues([['Completadas'], ['No pudo']]);
+  g.getRange('B41:B42').setFormulas([['=SUMPRODUCT(' + okM.replace(/\$J\$2/g, 'Resumen!$J$2') + '*(Misiones!$H$2:$H="Completada"))'],
+    ['=SUMPRODUCT(' + okM.replace(/\$J\$2/g, 'Resumen!$J$2') + '*(Misiones!$H$2:$H="No pudo"))']]);
+  g.getRange('A40:B42').setFontColor(C.muted).setFontSize(9);
+  for (let c = 1; c <= 12; c++) g.setColumnWidth(c, 100);
+  const W = 560, H = 320;
+  const graf = (b, fila, col) => g.insertChart(b.setOption('width', W).setOption('height', H).setOption('fontName', 'Poppins')
+    .setOption('titleTextStyle', { fontSize: 14, bold: true, color: C.navy }).setPosition(fila, col, 0, 0).build());
+  graf(g.newChart().setChartType(Charts.ChartType.PIE).addRange(ss.getRange('Resumen!A10:B12'))
+    .setOption('title', 'Participantes por segmento').setOption('pieHole', 0.45)
+    .setOption('colors', [C.orange, C.navy, C.blue]).setOption('legend', { position: 'right' }).setNumHeaders(0), 3, 1);
+  graf(g.newChart().setChartType(Charts.ChartType.PIE).addRange(g.getRange('A41:B42'))
+    .setOption('title', 'Resultado de todas las misiones').setOption('pieHole', 0.45)
+    .setOption('colors', [C.green, '#B42318']).setOption('legend', { position: 'right' }).setNumHeaders(0), 3, 7);
+  graf(g.newChart().setChartType(Charts.ChartType.COLUMN).addRange(ss.getRange('Resumen!B16:B28')).addRange(ss.getRange('Resumen!E16:E28'))
+    .setOption('title', '% de personas que completó cada misión').setOption('legend', { position: 'none' }).setOption('colors', [C.green])
+    .setOption('vAxis', { minValue: 0, maxValue: 1, format: 'percent' }).setNumHeaders(1), 20, 1);
+  graf(g.newChart().setChartType(Charts.ChartType.COLUMN).addRange(ss.getRange('Resumen!A9:A12')).addRange(ss.getRange('Resumen!H9:H12'))
+    .setOption('title', 'SUS promedio por segmento (68 = promedio)').setOption('legend', { position: 'none' }).setOption('colors', [C.orange])
+    .setOption('vAxis', { minValue: 0, maxValue: 100 }).setNumHeaders(1), 20, 7);
+
+  // Pestañas de datos: encabezado fijo y filas en franjas
+  [hoja_(HOJA_P, P), hoja_(HOJA_M, M)].forEach(d => {
+    d.getBandings().forEach(b => b.remove());
+    d.getRange(1, 1, d.getMaxRows(), d.getLastColumn()).applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, true, false)
+      .setHeaderRowColor(C.navy).setFirstRowColor('#FFFFFF').setSecondRowColor(C.soft);
+    d.getRange(1, 1, 1, d.getLastColumn()).setFontColor('#FFFFFF').setFontWeight('bold');
+    d.setFrozenRows(1);
+  });
+  ss.setActiveSheet(h);
 }

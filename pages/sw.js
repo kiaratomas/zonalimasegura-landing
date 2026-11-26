@@ -1,6 +1,8 @@
 /* ZonaLimaSegura · Service Worker
    Permite usar la Landing Page sin conexión (HU-13, HU-27, HU-41).
-   Estrategia: responde desde la caché si existe y actualiza en segundo plano. */
+   Estrategia "primero la red": con internet siempre se carga la versión
+   más reciente publicada y se actualiza la copia guardada; sin internet
+   se responde con la copia guardada en el dispositivo. */
 const CACHE = 'zls-offline-v1';
 
 self.addEventListener('install', () => self.skipWaiting());
@@ -10,13 +12,14 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    caches.open(CACHE).then(async cache => {
-      const cached = await cache.match(req, { ignoreSearch: true });
-      const network = fetch(req).then(res => {
-        if (res && res.ok && cached) cache.put(req, res.clone());
+    fetch(req, { cache: 'no-cache' })
+      .then(res => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(cache => cache.put(req, copy));
+        }
         return res;
-      }).catch(() => cached);
-      return cached || network;
-    })
+      })
+      .catch(() => caches.open(CACHE).then(cache => cache.match(req, { ignoreSearch: true })))
   );
 });

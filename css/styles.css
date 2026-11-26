@@ -502,3 +502,7 @@ button.item:hover { border-color: var(--line); }
   .split { grid-template-columns: 1fr; }
   .card { background: #fff; border: 1px solid #999; }
 }
+
+/* Sección "Ayúdanos a mejorar" (validación con usuarios, 6.2) */
+.validar__qr { margin: 0; text-align: center; }
+.validar__qr img { display: block; margin: 0 auto .5rem; background: var(--white); padding: .5rem; border-radius: 8px; }

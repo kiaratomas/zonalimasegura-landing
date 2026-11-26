@@ -155,6 +155,7 @@
         <label class="val-check"><input type="checkbox" name="acepto"> <span>Acepto participar y que mis respuestas anónimas se usen en el trabajo del curso.</span></label>
         <p class="val-error" id="val-form-error" role="alert"></p>
         <button type="submit" class="btn btn--primary btn--lg btn--block">Empezar</button>
+        <p class="small" style="text-align:center;margin-top:.75rem"><a href="${location.pathname}#validar">Ahora no, volver a la página</a></p>
       </form>`);
     const form = $('#val-form');
     form.addEventListener('change', e => {

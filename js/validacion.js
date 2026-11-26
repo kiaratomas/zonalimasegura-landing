@@ -30,7 +30,7 @@
   const SEGMENTS = {
     residentes: {
       label: 'Vivo en Lima y quiero preparar mi hogar ante un sismo',
-      filter: '¿Vives en Lima con tu familia o eres responsable de un hogar?'
+      filter: '¿Vives en Lima?'
     },
     brigadistas: {
       label: 'Soy brigadista o participo en la gestión de riesgos de mi comunidad',

@@ -29,7 +29,7 @@
   /* ---------------- Segmentos, filtros y misiones ---------------- */
   const SEGMENTS = {
     residentes: {
-      label: 'Vivo en Lima y quiero proteger mi casa',
+      label: 'Quiero proteger mi casa y a mi familia',
       filter: '¿Vives en Lima?'
     },
     brigadistas: {

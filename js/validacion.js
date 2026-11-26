@@ -202,7 +202,7 @@
   const rec = () => ses.missions[ses.idx];
 
   function startMission() {
-    if (ses.fresh) { ses.fresh = false; window.scrollTo(0, 0); }
+    if (ses.fresh) { ses.fresh = false; location.hash = ses.seg; } // va directo a la sección de su perfil
     base = appState();
     seniorPicked = false;
     if (!rec()) ses.missions[ses.idx] = { id: cur().id, start: now(), errors: 0, ok: null, secs: null };

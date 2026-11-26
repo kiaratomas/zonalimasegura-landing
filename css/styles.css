@@ -506,3 +506,8 @@ button.item:hover { border-color: var(--line); }
 /* Sección "Ayúdanos a mejorar" (validación con usuarios, 6.2) */
 .validar__qr { margin: 0; text-align: center; }
 .validar__qr img { display: block; margin: 0 auto .5rem; background: var(--white); padding: .5rem; border-radius: 8px; }
+
+/* Vista por perfil: solo se ve la sección del perfil elegido */
+.profile-section:not(.is-current) { display: none; }
+body[data-perfil] .hero, body[data-perfil] .context { display: none; }
+.back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; color: var(--navy); }

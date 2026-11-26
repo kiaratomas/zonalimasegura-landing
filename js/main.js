@@ -123,6 +123,7 @@
     const tab = $('#' + tabId);
     activateTab(tab, false);
     const section = tab.closest('section');
+    if (location.hash !== '#' + section.id) { history.pushState(null, '', '#' + section.id); showProfileView(); }
     section.scrollIntoView({ block: 'start' });
     const target = focusSel ? $(focusSel) : $('#' + tab.getAttribute('aria-controls'));
     setTimeout(() => target && target.focus({ preventScroll: true }), 60);
@@ -167,6 +168,22 @@
     toast(['Letra normal', 'Letra grande activada', 'Letra muy grande activada'][Number(b.dataset.font) - 1]);
   }));
 
+  /* ======================= Vista por perfil ======================= */
+  // Con #residentes, #brigadistas o #adultos se ve solo esa sección; con #inicio (o sin #) se ve la portada.
+  const PROFILES = ['residentes', 'brigadistas', 'adultos'];
+  function showProfileView() {
+    const id = location.hash.slice(1);
+    const home = !id || id === 'inicio' || id === 'validar';
+    if (!home && !PROFILES.includes(id)) return; // #nosotros, #main: no cambia la vista
+    if (home) delete document.body.dataset.perfil; else document.body.dataset.perfil = id;
+    PROFILES.forEach(p => $('#' + p).classList.toggle('is-current', p === id));
+    if (id === 'validar') $('#validar').scrollIntoView({ block: 'start' });
+    else if (home) window.scrollTo(0, 0);
+    else $('#' + id).scrollIntoView({ block: 'start' });
+  }
+  window.addEventListener('hashchange', showProfileView);
+  showProfileView();
+
   /* ======================= Elección de perfil (UF-01) ======================= */
   const profileForm = $('#profile-form');
   const savedProfile = $(`input[name="perfil"][value="${state.profile}"]`, profileForm);
@@ -175,8 +192,8 @@
     e.preventDefault();
     const v = $('input[name="perfil"]:checked', profileForm).value;
     state.profile = v; save();
+    history.pushState(null, '', '#' + v); showProfileView();
     const section = $('#' + v);
-    section.scrollIntoView({ block: 'start' });
     setTimeout(() => $('.section-title', section).focus({ preventScroll: true }), 60);
   });
 

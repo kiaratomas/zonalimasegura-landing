@@ -19,7 +19,7 @@ const P = [
 const P_PUBLICO = P.slice(0, -2); // nombre y contacto van al final y doGet no los devuelve (el tablero es público)
 const M = [
   ['fecha', 'Fecha'], ['pid', 'Código'], ['tipo', 'Tipo'], ['segmento', 'Segmento'], ['mision', 'Misión'], ['hu', 'HU'],
-  ['descripcion', 'Descripción'], ['resultado', 'Resultado'], ['tiempo_s', 'Tiempo (s)'], ['errores', 'Errores']
+  ['descripcion', 'Descripción'], ['resultado', 'Resultado'], ['tiempo_s', 'Tiempo (s)'], ['errores', 'Errores'], ['pista', 'Usó pista']
 ];
 const SEGMENTOS = ['residentes', 'brigadistas', 'adultos'];
 
@@ -51,6 +51,7 @@ function doPost(e) {
   try {
     const hp = hoja_(HOJA_P, P), hm = hoja_(HOJA_M, M);
     if (hp.getRange(1, P.length).getValue() === '') hp.getRange(1, 1, 1, P.length).setValues([P.map(c => c[1])]); // columnas nuevas en hojas antiguas
+    if (hm.getRange(1, M.length).getValue() === '') hm.getRange(1, 1, 1, M.length).setValues([M.map(c => c[1])]);
     const n = hp.getLastRow();
     if (n > 1 && hp.getRange(2, 2, n - 1, 1).getValues().some(r => r[0] === d.pid)) return json_({ ok: true, duplicado: true });
     const fecha = new Date();
@@ -58,12 +59,12 @@ function doPost(e) {
     const puntaje = sus.reduce((t, v, i) => t + (i % 2 === 0 ? v - 1 : 5 - v), 0) * 2.5;
     const mis = d.misiones.map(m => ({
       id: txt_(m.id, 4), hu: txt_(m.hu, 30), desc: txt_(m.mision, 200), ok: m.completada === true,
-      t: num_(m.tiempo_s, 0, 36000), err: num_(m.errores, 0, 999)
+      t: num_(m.tiempo_s, 0, 36000), err: num_(m.errores, 0, 999), tip: m.pista === true
     }));
     hp.appendRow([fecha, d.pid, tipo, d.segmento, txt_(d.filtro, 2), txt_(d.edad, 10), txt_(d.uso, 30), txt_(d.distrito, 40),
       txt_(d.dispositivo, 12), num_(d.duracion_s, 0, 36000), ...sus, puntaje, mis.filter(m => m.ok).length + ' de ' + mis.length,
       txt_(d.comentario, 500), txt_(d.nombre, 60), txt_(d.contacto, 80)]);
-    mis.forEach(m => hm.appendRow([fecha, d.pid, tipo, d.segmento, m.id, m.hu, m.desc, m.ok ? 'Completada' : 'No pudo', m.t, m.err]));
+    mis.forEach(m => hm.appendRow([fecha, d.pid, tipo, d.segmento, m.id, m.hu, m.desc, m.ok ? 'Completada' : 'No pudo', m.t, m.err, m.tip ? 'Sí' : 'No']));
     return json_({ ok: true });
   } finally {
     lock.releaseLock();

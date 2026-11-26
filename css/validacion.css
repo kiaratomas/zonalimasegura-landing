@@ -94,3 +94,18 @@ body:has(.val-bar) { padding-bottom: 190px; }
 .dash-qr img { width: 148px; height: 148px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--white); }
 .dash-qr code { word-break: break-all; font-size: .8125rem; }
 .dash-error { color: var(--danger); font-weight: 600; }
+
+/* Bienvenida en 2 pasos y barra de misión más clara */
+.val-how { margin: 0; padding-left: 1.4em; display: grid; gap: 4px; font-size: 1.0625rem; }
+.val-step { display: grid; gap: 18px; }
+.val-step__n { margin: 0; font-size: .8125rem; font-weight: 700; color: var(--muted); }
+.val-back { justify-self: center; min-height: 44px; }
+.val-dots { display: inline-flex; gap: 4px; margin-left: 4px; }
+.val-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.val-dots i.is-done { background: var(--navy); }
+.val-dots i.is-now { background: var(--orange-action); }
+.val-tip { margin: 0; padding: 8px 12px; background: var(--orange-soft); border-radius: var(--radius-sm); font-size: .9375rem; font-weight: 600; }
+.val-bar__actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.val-bar__actions .link-btn { min-height: 44px; color: var(--muted); }
+.val-q:has(> .val-opt--inline) { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+.val-q:has(> .val-opt--inline) .val-opt--inline { margin: 0; }

@@ -29,15 +29,15 @@
   /* ---------------- Segmentos, filtros y misiones ---------------- */
   const SEGMENTS = {
     residentes: {
-      label: 'Vivo en Lima y quiero preparar mi hogar ante un sismo',
+      label: 'Vivo en Lima y quiero proteger mi casa',
       filter: '¿Vives en Lima?'
     },
     brigadistas: {
-      label: 'Soy brigadista o participo en la gestión de riesgos de mi comunidad',
+      label: 'Soy brigadista o ayudo en emergencias de mi barrio',
       filter: '¿Participas o has participado en una brigada, junta vecinal, Defensa Civil o en la gestión de riesgo de desastres?'
     },
     adultos: {
-      label: 'Soy adulto mayor, tengo dificultad para caminar o cuido a alguien así',
+      label: 'Soy adulto mayor, me cuesta caminar o cuido a alguien así',
       filter: '¿Tienes 60 años o más, alguna dificultad para caminar, o cuidas a una persona en esa situación?'
     }
   };
@@ -45,33 +45,45 @@
   // ok(base, st): true cuando la misión está cumplida. base = estado al empezar la misión.
   const MISSIONS = {
     residentes: [
-      { id: 'R1', hu: 'HU-01, HU-02', text: 'Quieres saber qué tan riesgosa es la zona donde vives ante un sismo. Tu dirección es Jr. Las Flores 245.',
+      { id: 'R1', hu: 'HU-01, HU-02', text: 'Averigua qué tan riesgosa es tu zona. Tu dirección: Jr. Las Flores 245.',
+        tip: 'Pestaña «Mi zona»: escribe la dirección y pulsa «Buscar dirección».',
         ok: (b, s) => !!s.home && !$('#risk-card')?.hidden },
-      { id: 'R2', hu: 'HU-04 a HU-07', text: 'Quieres saber si tu casa tiene señales de que podría dañarse en un sismo.',
+      { id: 'R2', hu: 'HU-04 a HU-07', text: 'Revisa si tu casa tiene señales de daño ante un sismo.',
+        tip: 'Pestaña «Autodiagnóstico» → «Empezar autodiagnóstico».',
         ok: (b, s) => !!s.diag && s.diag.date !== (b.diag && b.diag.date) },
-      { id: 'R3', hu: 'HU-09, HU-10', text: 'Quieres acordar con tu familia por dónde evacuar en caso de sismo.',
+      { id: 'R3', hu: 'HU-09, HU-10', text: 'Elige la ruta por la que tu familia evacuaría.',
+        tip: 'Pestaña «Mapa y rutas»: toca una ruta y pulsa «Elegir como mi ruta».',
         ok: (b, s) => !!(s.plan && s.plan.routeKey) && s.plan.routeKey !== (b.plan && b.plan.routeKey) },
-      { id: 'R4', hu: 'HU-13', text: 'Quieres poder ver tu plan de evacuación aunque no tengas internet.',
+      { id: 'R4', hu: 'HU-13', text: 'Haz que tu plan se pueda ver sin internet.',
+        tip: 'Pestaña «Mapa y rutas» → botón «Guardar mapa».',
         ok: (b, s) => !!(s.offline && s.offline.res) && s.offline.res.date !== (b.offline && b.offline.res && b.offline.res.date) }
     ],
     brigadistas: [
-      { id: 'B1', hu: 'HU-22', text: 'En tu recorrido viste cables caídos que bloquean una calle. Avisa a los vecinos para que no pasen por ahí.',
+      { id: 'B1', hu: 'HU-22', text: 'Viste cables caídos que bloquean una calle. Avisa a los vecinos.',
+        tip: 'Pestaña «Registrar» → «Vía bloqueada» → márcala en el mapa → «Guardar registro».',
         ok: (b, s) => len(s.bloqueos) > len(b.bloqueos) },
-      { id: 'B2', hu: 'HU-18', text: 'Hay un parque que puede servir para que los vecinos se reúnan en una emergencia. Agrégalo.',
+      { id: 'B2', hu: 'HU-18', text: 'Agrega un parque como punto de reunión.',
+        tip: 'Pestaña «Registrar» → «Punto de reunión» → márcalo en el mapa → «Guardar registro».',
         ok: (b, s) => len(s.puntosExtra) > len(b.puntosExtra) },
-      { id: 'B3', hu: 'HU-24', text: 'Ya recorriste una ruta que propusieron los vecinos y está en buen estado. Déjala lista para que la usen.',
+      { id: 'B3', hu: 'HU-24', text: 'Aprueba una ruta que propusieron los vecinos.',
+        tip: 'Pestaña «Gestión y validación» → elige una ruta → «Validar ruta».',
         ok: (b, s) => validadas(s) > validadas(b) },
-      { id: 'B4', hu: 'HU-27', text: 'Mañana vas a una zona sin señal de celular y necesitas tener el mapa a la mano.',
+      { id: 'B4', hu: 'HU-27', text: 'Guarda el mapa para usarlo donde no hay señal.',
+        tip: 'Pestaña «Mapa de la zona» → botón «Guardar mapa».',
         ok: (b, s) => !!(s.offline && s.offline.brig) && s.offline.brig.date !== (b.offline && b.offline.brig && b.offline.brig.date) }
     ],
     adultos: [
-      { id: 'A1', hu: 'HU-33', text: 'Te cuesta leer letras pequeñas. Haz que la página se lea mejor.',
+      { id: 'A1', hu: 'HU-33', text: 'Haz que las letras se vean más grandes.',
+        tip: 'Botones «A+» del menú de arriba, o en la pestaña «Inicio».',
         ok: (b, s) => (s.font || 1) > 1 },
-      { id: 'A2', hu: 'HU-35, HU-36, HU-39', text: 'No puedes subir escaleras. Encuentra una ruta para evacuar que sea fácil para ti y revisa por dónde va.',
+      { id: 'A2', hu: 'HU-35, HU-36, HU-39', text: 'No puedes subir escaleras. Busca una ruta para ti y mira por dónde va.',
+        tip: 'Pestaña «Rutas accesibles» → toca una ruta «Sin escaleras».',
         ok: () => seniorPicked },
-      { id: 'A3', hu: 'HU-42', text: 'Quieres que tu nieta Rosa (celular 912 345 678) quede registrada como tu apoyo.',
+      { id: 'A3', hu: 'HU-42', text: 'Registra a tu nieta Rosa (912 345 678) como tu apoyo.',
+        tip: 'Pestaña «Mis apoyos» → «Guardar familiar».',
         ok: (b, s) => len(s.contacts) > len(b.contacts) },
-      { id: 'A4', hu: 'HU-43', text: 'Quieres avisarle a un familiar dónde estás.',
+      { id: 'A4', hu: 'HU-43', text: 'Avísale a un familiar dónde estás.',
+        tip: 'Pestaña «Mis apoyos» → «Compartir ubicación».',
         ok: (b, s) => !!s.sharing && s.sharing.date !== (b.sharing && b.sharing.date) }
     ]
   };
@@ -127,43 +139,52 @@
   function renderIntro() {
     overlay(`
       <p class="val-eyebrow">Prueba de ZonaLimaSegura ${badge()}</p>
-      <h2 id="val-title">Ayúdanos a mejorar esta página</h2>
-      <p>Te pediremos hacer <strong>4 misiones cortas</strong> en la página y responder <strong>10 preguntas</strong>. Toma unos 7 minutos.</p>
-      <ul class="val-list">
-        <li>Evaluamos la página, no a ti: no hay respuestas correctas ni incorrectas.</li>
-        <li>Te pedimos tu nombre y un correo o celular solo para comprobar que eres una persona real. No se publican: solo los ve el equipo del curso.</li>
-        <li>Los datos del mapa son de un barrio de demostración.</li>
-      </ul>
+      <h2 id="val-title">Ayúdanos a probar esta página</h2>
+      <ol class="val-how">
+        <li><strong>Haz 4 misiones</strong> cortas en la página.</li>
+        <li><strong>Responde 10 preguntas</strong> sobre qué te pareció.</li>
+      </ol>
+      <p class="muted small">Unos 7 minutos. Evaluamos la página, no a ti.</p>
       <form id="val-form" novalidate>
-        <fieldset class="val-q"><legend>¿Cuál de estas opciones te describe mejor?</legend>
-          ${Object.entries(SEGMENTS).map(([k, s]) => `<label class="val-opt"><input type="radio" name="seg" value="${k}"> <span>${s.label}</span></label>`).join('')}
-          <label class="val-opt"><input type="radio" name="seg" value="ninguno"> <span>Ninguna de las anteriores</span></label>
-        </fieldset>
-        <fieldset class="val-q" id="val-filter" hidden><legend id="val-filter-q"></legend>
-          <label class="val-opt val-opt--inline"><input type="radio" name="filtro" value="Sí"> <span>Sí</span></label>
-          <label class="val-opt val-opt--inline"><input type="radio" name="filtro" value="No"> <span>No</span></label>
-        </fieldset>
-        <fieldset class="val-q"><legend>¿Qué edad tienes?</legend>
-          ${['18 a 29', '30 a 44', '45 a 59', '60 a 69', '70 o más'].map(v => `<label class="val-opt val-opt--inline"><input type="radio" name="edad" value="${v}"> <span>${v}</span></label>`).join('')}
-        </fieldset>
-        <fieldset class="val-q"><legend>¿Con qué frecuencia usas internet en el celular o la computadora?</legend>
-          ${['Todos los días', 'Algunas veces por semana', 'Casi nunca'].map(v => `<label class="val-opt val-opt--inline"><input type="radio" name="uso" value="${v}"> <span>${v}</span></label>`).join('')}
-        </fieldset>
-        <label class="val-field">Nombre y apellido
-          <input type="text" name="nombre" maxlength="60" autocomplete="name">
-        </label>
-        <label class="val-field">Correo o número de celular
-          <input type="text" name="contacto" maxlength="80" autocomplete="email">
-        </label>
-        <label class="val-field">Distrito donde vives <span class="muted">(opcional)</span>
-          <input type="text" name="distrito" maxlength="40" autocomplete="off">
-        </label>
-        <label class="val-check"><input type="checkbox" name="acepto"> <span>Acepto participar y que mis respuestas se usen en el trabajo del curso. Mi nombre y contacto no se publican.</span></label>
+        <div id="val-step1" class="val-step">
+          <p class="val-step__n">Paso 1 de 2</p>
+          <fieldset class="val-q"><legend>¿Quién eres?</legend>
+            ${Object.entries(SEGMENTS).map(([k, s]) => `<label class="val-opt"><input type="radio" name="seg" value="${k}"> <span>${s.label}</span></label>`).join('')}
+            <label class="val-opt"><input type="radio" name="seg" value="ninguno"> <span>Ninguna de estas</span></label>
+          </fieldset>
+          <fieldset class="val-q" id="val-filter" hidden><legend id="val-filter-q"></legend>
+            <label class="val-opt val-opt--inline"><input type="radio" name="filtro" value="Sí"> <span>Sí</span></label>
+            <label class="val-opt val-opt--inline"><input type="radio" name="filtro" value="No"> <span>No</span></label>
+          </fieldset>
+          <button type="button" class="btn btn--primary btn--lg btn--block" id="val-next">Siguiente</button>
+        </div>
+        <div id="val-step2" class="val-step" hidden>
+          <p class="val-step__n">Paso 2 de 2</p>
+          <label class="val-field">Nombre y apellido
+            <input type="text" name="nombre" maxlength="60" autocomplete="name">
+          </label>
+          <label class="val-field">Correo o celular
+            <input type="text" name="contacto" maxlength="80" autocomplete="email">
+          </label>
+          <fieldset class="val-q"><legend>Tu edad</legend>
+            ${['18 a 29', '30 a 44', '45 a 59', '60 a 69', '70 o más'].map(v => `<label class="val-opt val-opt--inline"><input type="radio" name="edad" value="${v}"> <span>${v}</span></label>`).join('')}
+          </fieldset>
+          <fieldset class="val-q"><legend>¿Cada cuánto usas internet?</legend>
+            ${['Todos los días', 'Algunas veces por semana', 'Casi nunca'].map(v => `<label class="val-opt"><input type="radio" name="uso" value="${v}"> <span>${v}</span></label>`).join('')}
+          </fieldset>
+          <label class="val-field"><span>Distrito <span class="muted">(opcional)</span></span>
+            <input type="text" name="distrito" maxlength="40" autocomplete="off">
+          </label>
+          <label class="val-check"><input type="checkbox" name="acepto"> <span>Acepto participar. Mi nombre y contacto no se publican.</span></label>
+          <button type="submit" class="btn btn--primary btn--lg btn--block">Empezar misiones</button>
+          <button type="button" class="link-btn val-back" id="val-back">← Atrás</button>
+        </div>
         <p class="val-error" id="val-form-error" role="alert"></p>
-        <button type="submit" class="btn btn--primary btn--lg btn--block">Empezar</button>
-        <p class="small" style="text-align:center;margin-top:.75rem"><a href="${location.pathname}#validar">Ahora no, volver a la página</a></p>
+        <p class="small" style="text-align:center;margin:0"><a href="${location.pathname}#validar">Ahora no, volver a la página</a></p>
       </form>`);
     const form = $('#val-form');
+    const err = $('#val-form-error');
+    const step = n => { $('#val-step1').hidden = n !== 1; $('#val-step2').hidden = n !== 2; err.textContent = ''; $('#val-title').focus(); };
     form.addEventListener('change', e => {
       if (e.target.name !== 'seg') return;
       const s = SEGMENTS[e.target.value];
@@ -171,20 +192,25 @@
       if (s) $('#val-filter-q').textContent = s.filter;
       form.querySelectorAll('input[name=filtro]').forEach(i => { i.checked = false; });
     });
+    $('#val-next').addEventListener('click', () => {
+      const f = new FormData(form), seg = f.get('seg');
+      if (!seg) return (err.textContent = 'Elige la opción que te describe.');
+      if (seg !== 'ninguno' && !f.get('filtro')) return (err.textContent = 'Responde Sí o No.');
+      if (!(seg !== 'ninguno' && f.get('filtro') === 'Sí') && !demo()) return renderNotFit();
+      step(2);
+    });
+    $('#val-back').addEventListener('click', () => step(1));
     form.addEventListener('submit', e => {
       e.preventDefault();
       const f = new FormData(form);
-      const err = $('#val-form-error');
       const seg = f.get('seg');
-      if (!seg) return (err.textContent = 'Elige la opción que te describe.');
-      if (seg !== 'ninguno' && !f.get('filtro')) return (err.textContent = 'Responde la pregunta de Sí o No.');
-      if (!f.get('edad') || !f.get('uso')) return (err.textContent = 'Responde tu edad y con qué frecuencia usas internet.');
+      if (!seg) return step(1);
       const nombre = String(f.get('nombre') || '').trim(), contacto = String(f.get('contacto') || '').trim();
       if (!/\S{2,}\s+\S{2,}/.test(nombre)) return (err.textContent = 'Escribe tu nombre y apellido.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto) && !/^\+?(51)?\s?9\d{2}\s?\d{3}\s?\d{3}$/.test(contacto)) return (err.textContent = 'Escribe un correo válido o un celular de 9 dígitos.');
-      if (!f.get('acepto')) return (err.textContent = 'Para continuar, marca que aceptas participar.');
+      if (!f.get('edad') || !f.get('uso')) return (err.textContent = 'Responde tu edad y cada cuánto usas internet.');
+      if (!f.get('acepto')) return (err.textContent = 'Marca que aceptas participar.');
       const fits = seg !== 'ninguno' && f.get('filtro') === 'Sí';
-      if (!fits && !demo()) return renderNotFit();
       ses = {
         pid: 'P-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
         demo: demo(), seg: fits ? seg : (seg === 'ninguno' ? 'residentes' : seg),
@@ -205,7 +231,7 @@
   }
 
   /* ---------- 2. Misiones ---------- */
-  let ticker = null, base = null;
+  let ticker = null, base = null, tipShown = false;
   const list = () => MISSIONS[ses.seg];
   const cur = () => list()[ses.idx];
   const rec = () => ses.missions[ses.idx];
@@ -213,7 +239,7 @@
   function startMission() {
     if (ses.fresh) { ses.fresh = false; location.hash = ses.seg; } // va directo a la sección de su perfil
     base = appState();
-    seniorPicked = false;
+    seniorPicked = false; tipShown = false;
     if (!rec()) ses.missions[ses.idx] = { id: cur().id, start: now(), errors: 0, ok: null, secs: null };
     saveSes();
     renderBar(false);
@@ -225,18 +251,24 @@
     root.innerHTML = `
       <section class="val-bar${collapsed ? ' is-collapsed' : ''}" aria-label="Misión de la prueba">
         <div class="val-bar__head">
-          <p class="val-eyebrow">Misión ${ses.idx + 1} de ${list().length} ${badge()}</p>
+          <p class="val-eyebrow">Misión ${ses.idx + 1} de ${list().length} ${badge()}
+            <span class="val-dots" aria-hidden="true">${list().map((_, i) => `<i class="${i < ses.idx ? 'is-done' : i === ses.idx ? 'is-now' : ''}"></i>`).join('')}</span></p>
           <button type="button" class="val-icon-btn" id="val-toggle" aria-expanded="${!collapsed}">${collapsed ? 'Ver misión' : 'Ocultar'}</button>
         </div>
         <div class="val-bar__body">
           <p class="val-mission" id="val-mission-text">${esc(m.text)}</p>
-          <p class="val-hint">Usa la página como lo harías normalmente. Cuando lo logres, avanzaremos solos.</p>
-          <button type="button" class="btn btn--secondary btn--sm" id="val-giveup">No pude hacerlo</button>
+          <p class="val-tip" id="val-tip"${tipShown ? '' : ' hidden'}>Pista: ${esc(m.tip)}</p>
+          <p class="val-hint">Cuando lo logres, pasamos solos a la siguiente.</p>
+          <div class="val-bar__actions">
+            ${tipShown ? '' : '<button type="button" class="btn btn--secondary btn--sm" id="val-tip-btn">Ver pista</button>'}
+            <button type="button" class="link-btn" id="val-giveup">No pude hacerlo</button>
+          </div>
         </div>
         <p class="sr-only" aria-live="polite" id="val-live"></p>
       </section>`;
     $('#val-toggle').addEventListener('click', () => renderBar(!collapsed));
     $('#val-giveup').addEventListener('click', () => finishMission(false));
+    const tb = $('#val-tip-btn'); if (tb) tb.addEventListener('click', () => { tipShown = true; rec().tip = true; saveSes(); renderBar(false); });
   }
   function check() {
     if (!ses || ses.phase !== 'mission') return;
@@ -272,7 +304,7 @@
     overlay(`
       <p class="val-eyebrow">Último paso ${badge()}</p>
       <h2 id="val-title">¿Qué te pareció la página?</h2>
-      <p>Marca qué tan de acuerdo estás con cada frase. <strong>1</strong> = totalmente en desacuerdo y <strong>5</strong> = totalmente de acuerdo.</p>
+      <p><strong>1</strong> = nada de acuerdo · <strong>5</strong> = totalmente de acuerdo.</p>
       <form id="val-sus" novalidate>
         ${SUS.map((q, i) => `
           <fieldset class="val-q val-sus">
@@ -280,7 +312,7 @@
             <div class="val-scale">${scale.map(v => `<label><input type="radio" name="s${i}" value="${v}"><span>${v}</span></label>`).join('')}</div>
             <div class="val-scale__ends" aria-hidden="true"><span>Totalmente en desacuerdo</span><span>Totalmente de acuerdo</span></div>
           </fieldset>`).join('')}
-        <label class="val-field">¿Qué fue lo más difícil o qué cambiarías? <span class="muted">(opcional)</span>
+        <label class="val-field"><span>¿Qué fue lo más difícil o qué cambiarías? <span class="muted">(opcional)</span></span>
           <textarea name="comentario" rows="3" maxlength="500"></textarea>
         </label>
         <p class="val-error" id="val-sus-error" role="alert"></p>
@@ -308,7 +340,7 @@
       segmento: ses.seg, filtro: ses.filtro, edad: ses.edad, uso: ses.uso, distrito: ses.distrito, nombre: ses.nombre, contacto: ses.contacto,
       dispositivo: window.innerWidth <= 640 ? 'Celular' : window.innerWidth <= 1024 ? 'Tablet' : 'Computadora',
       duracion_s: Math.round((now() - ses.started) / 1000),
-      misiones: ses.missions.map((m, i) => ({ id: m.id, hu: ms[i].hu, mision: ms[i].text, completada: !!m.ok, tiempo_s: m.secs, errores: m.errors })),
+      misiones: ses.missions.map((m, i) => ({ id: m.id, hu: ms[i].hu, mision: ms[i].text, completada: !!m.ok, tiempo_s: m.secs, errores: m.errors, pista: !!m.tip })),
       sus, sus_puntaje: susScore(sus), comentario
     };
     enqueue(payload);

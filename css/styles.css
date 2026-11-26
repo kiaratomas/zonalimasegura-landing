@@ -450,7 +450,6 @@ button.item:hover { border-color: var(--line); }
   .hero-img { max-width: 480px; }
   .split, .split--map, .split--map-right { grid-template-columns: 1fr; }
   .split--map > .map-wrap, .split--map-right > .map-wrap { order: -1; }
-  #panel-res-zona .split > .map-wrap { order: -1; }
   .reg-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .about-grid { grid-template-columns: 1fr; }
   .signs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -511,3 +510,8 @@ button.item:hover { border-color: var(--line); }
 .profile-section:not(.is-current) { display: none; }
 body[data-perfil] .hero, body[data-perfil] .context { display: none; }
 .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; color: var(--navy); }
+
+/* Aviso para quien llega a hacer la prueba de usabilidad */
+.test-strip { display: flex; flex-wrap: wrap; gap: .25rem .5rem; align-items: center; justify-content: center; margin: 0 0 1.5rem; padding: .75rem 1rem; border-radius: var(--radius); background: var(--navy); color: var(--white); text-decoration: none; text-align: center; }
+.test-strip strong { color: var(--orange-soft); }
+.test-strip:hover { color: var(--white); background: var(--navy-2); }

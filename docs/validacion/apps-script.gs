@@ -13,8 +13,10 @@ const P = [
   ['edad', 'Edad'], ['uso', 'Uso de internet'], ['distrito', 'Distrito'], ['dispositivo', 'Dispositivo'], ['duracion_s', 'Duración (s)'],
   ['sus1', 'SUS 1'], ['sus2', 'SUS 2'], ['sus3', 'SUS 3'], ['sus4', 'SUS 4'], ['sus5', 'SUS 5'],
   ['sus6', 'SUS 6'], ['sus7', 'SUS 7'], ['sus8', 'SUS 8'], ['sus9', 'SUS 9'], ['sus10', 'SUS 10'],
-  ['sus_puntaje', 'Puntaje SUS'], ['completadas', 'Misiones completadas'], ['comentario', 'Comentario']
+  ['sus_puntaje', 'Puntaje SUS'], ['completadas', 'Misiones completadas'], ['comentario', 'Comentario'],
+  ['nombre', 'Nombre'], ['contacto', 'Correo o celular']
 ];
+const P_PUBLICO = P.slice(0, -2); // nombre y contacto van al final y doGet no los devuelve (el tablero es público)
 const M = [
   ['fecha', 'Fecha'], ['pid', 'Código'], ['tipo', 'Tipo'], ['segmento', 'Segmento'], ['mision', 'Misión'], ['hu', 'HU'],
   ['descripcion', 'Descripción'], ['resultado', 'Resultado'], ['tiempo_s', 'Tiempo (s)'], ['errores', 'Errores']
@@ -48,6 +50,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     const hp = hoja_(HOJA_P, P), hm = hoja_(HOJA_M, M);
+    if (hp.getRange(1, P.length).getValue() === '') hp.getRange(1, 1, 1, P.length).setValues([P.map(c => c[1])]); // columnas nuevas en hojas antiguas
     const n = hp.getLastRow();
     if (n > 1 && hp.getRange(2, 2, n - 1, 1).getValues().some(r => r[0] === d.pid)) return json_({ ok: true, duplicado: true });
     const fecha = new Date();
@@ -59,7 +62,7 @@ function doPost(e) {
     }));
     hp.appendRow([fecha, d.pid, tipo, d.segmento, txt_(d.filtro, 2), txt_(d.edad, 10), txt_(d.uso, 30), txt_(d.distrito, 40),
       txt_(d.dispositivo, 12), num_(d.duracion_s, 0, 36000), ...sus, puntaje, mis.filter(m => m.ok).length + ' de ' + mis.length,
-      txt_(d.comentario, 500)]);
+      txt_(d.comentario, 500), txt_(d.nombre, 60), txt_(d.contacto, 80)]);
     mis.forEach(m => hm.appendRow([fecha, d.pid, tipo, d.segmento, m.id, m.hu, m.desc, m.ok ? 'Completada' : 'No pudo', m.t, m.err]));
     return json_({ ok: true });
   } finally {
@@ -74,7 +77,7 @@ function doGet() {
     return h.getRange(2, 1, h.getLastRow() - 1, cols.length).getValues()
       .map(r => Object.fromEntries(cols.map((c, i) => [c[0], r[i] instanceof Date ? r[i].toISOString() : r[i]])));
   };
-  return json_({ actualizado: new Date().toISOString(), participantes: leer(HOJA_P, P), misiones: leer(HOJA_M, M) });
+  return json_({ actualizado: new Date().toISOString(), participantes: leer(HOJA_P, P_PUBLICO), misiones: leer(HOJA_M, M) });
 }
 
 /**

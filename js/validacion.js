@@ -131,7 +131,7 @@
       <p>Te pediremos hacer <strong>4 misiones cortas</strong> en la página y responder <strong>10 preguntas</strong>. Toma unos 7 minutos.</p>
       <ul class="val-list">
         <li>Evaluamos la página, no a ti: no hay respuestas correctas ni incorrectas.</li>
-        <li>Es anónimo: no pedimos tu nombre, correo ni teléfono.</li>
+        <li>Te pedimos tu nombre y un correo o celular solo para comprobar que eres una persona real. No se publican: solo los ve el equipo del curso.</li>
         <li>Los datos del mapa son de un barrio de demostración.</li>
       </ul>
       <form id="val-form" novalidate>
@@ -149,10 +149,16 @@
         <fieldset class="val-q"><legend>¿Con qué frecuencia usas internet en el celular o la computadora?</legend>
           ${['Todos los días', 'Algunas veces por semana', 'Casi nunca'].map(v => `<label class="val-opt val-opt--inline"><input type="radio" name="uso" value="${v}"> <span>${v}</span></label>`).join('')}
         </fieldset>
+        <label class="val-field">Nombre y apellido
+          <input type="text" name="nombre" maxlength="60" autocomplete="name">
+        </label>
+        <label class="val-field">Correo o número de celular
+          <input type="text" name="contacto" maxlength="80" autocomplete="email">
+        </label>
         <label class="val-field">Distrito donde vives <span class="muted">(opcional)</span>
           <input type="text" name="distrito" maxlength="40" autocomplete="off">
         </label>
-        <label class="val-check"><input type="checkbox" name="acepto"> <span>Acepto participar y que mis respuestas anónimas se usen en el trabajo del curso.</span></label>
+        <label class="val-check"><input type="checkbox" name="acepto"> <span>Acepto participar y que mis respuestas se usen en el trabajo del curso. Mi nombre y contacto no se publican.</span></label>
         <p class="val-error" id="val-form-error" role="alert"></p>
         <button type="submit" class="btn btn--primary btn--lg btn--block">Empezar</button>
         <p class="small" style="text-align:center;margin-top:.75rem"><a href="${location.pathname}#validar">Ahora no, volver a la página</a></p>
@@ -173,6 +179,9 @@
       if (!seg) return (err.textContent = 'Elige la opción que te describe.');
       if (seg !== 'ninguno' && !f.get('filtro')) return (err.textContent = 'Responde la pregunta de Sí o No.');
       if (!f.get('edad') || !f.get('uso')) return (err.textContent = 'Responde tu edad y con qué frecuencia usas internet.');
+      const nombre = String(f.get('nombre') || '').trim(), contacto = String(f.get('contacto') || '').trim();
+      if (!/\S{2,}\s+\S{2,}/.test(nombre)) return (err.textContent = 'Escribe tu nombre y apellido.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto) && !/^\+?(51)?\s?9\d{2}\s?\d{3}\s?\d{3}$/.test(contacto)) return (err.textContent = 'Escribe un correo válido o un celular de 9 dígitos.');
       if (!f.get('acepto')) return (err.textContent = 'Para continuar, marca que aceptas participar.');
       const fits = seg !== 'ninguno' && f.get('filtro') === 'Sí';
       if (!fits && !demo()) return renderNotFit();
@@ -180,7 +189,7 @@
         pid: 'P-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
         demo: demo(), seg: fits ? seg : (seg === 'ninguno' ? 'residentes' : seg),
         filtro: f.get('filtro') || 'No', edad: f.get('edad'), uso: f.get('uso'),
-        distrito: String(f.get('distrito') || '').trim().slice(0, 40),
+        distrito: String(f.get('distrito') || '').trim().slice(0, 40), nombre, contacto,
         started: now(), idx: 0, phase: 'mission', missions: [], fresh: true
       };
       saveSes();
@@ -296,7 +305,7 @@
     const ms = list();
     const payload = {
       pid: ses.pid, fecha: new Date().toISOString(), tipo: ses.demo ? 'demo' : 'real',
-      segmento: ses.seg, filtro: ses.filtro, edad: ses.edad, uso: ses.uso, distrito: ses.distrito,
+      segmento: ses.seg, filtro: ses.filtro, edad: ses.edad, uso: ses.uso, distrito: ses.distrito, nombre: ses.nombre, contacto: ses.contacto,
       dispositivo: window.innerWidth <= 640 ? 'Celular' : window.innerWidth <= 1024 ? 'Tablet' : 'Computadora',
       duracion_s: Math.round((now() - ses.started) / 1000),
       misiones: ses.missions.map((m, i) => ({ id: m.id, hu: ms[i].hu, mision: ms[i].text, completada: !!m.ok, tiempo_s: m.secs, errores: m.errors })),

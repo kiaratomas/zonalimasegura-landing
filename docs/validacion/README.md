@@ -40,4 +40,4 @@ La hoja crea sola las pestañas **Participantes** (una fila por persona, con el 
 
 ## Datos y privacidad
 
-No se piden nombres, correos ni teléfonos. El distrito es opcional. Cada participante recibe un código (por ejemplo, `P-4K7QZ`). En una estación de prueba compartida, el botón "Siguiente participante" borra los datos de la persona anterior.
+Se pide nombre y apellido y un correo o celular, para demostrar que cada participante es una persona real. Se guardan en la hoja (columnas "Nombre" y "Correo o celular"), pero el tablero público y el JSON de doGet no los muestran. El distrito es opcional. Cada participante recibe un código (por ejemplo, `P-4K7QZ`). En una estación de prueba compartida, el botón "Siguiente participante" borra los datos de la persona anterior.

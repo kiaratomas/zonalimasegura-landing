@@ -936,14 +936,15 @@
       <p>${esc(r.desc || '')}</p>
       ${r.status === 'validada' ? `<p class="notice notice--ok" style="margin-top:.75rem">${icon('check')} Esta ruta ya está validada y visible para los vecinos.</p>` : `
       <form id="val-form" class="stack" style="margin-top:1rem" novalidate>
-        <fieldset class="check-group"><legend class="label">Verificación en campo</legend>
+        <fieldset class="check-group"><legend class="label">¿Todo está bien? Marca los 3 y valida</legend>
           <label class="check"><input type="checkbox" name="val">Recorrí la ruta y está libre de bloqueos</label>
           <label class="check"><input type="checkbox" name="val">El punto de destino es seguro y está habilitado</label>
           <label class="check"><input type="checkbox" name="val">Las referencias y señales del recorrido son claras</label>
         </fieldset>
-        <div><label class="label" for="val-obs">Observación (obligatoria si requiere revisión)</label><textarea class="input" id="val-obs" rows="2" maxlength="160"></textarea></div>
+        <div class="btn-row"><button type="submit" class="btn btn--primary">Validar ruta</button></div>
+        <div><label class="label" for="val-obs">¿Algo no está bien? Escribe qué hay que revisar</label><textarea class="input" id="val-obs" rows="2" maxlength="160" placeholder="Ej.: hay un poste caído en la segunda cuadra"></textarea></div>
+        <div class="btn-row"><button type="button" class="btn btn--secondary" id="val-review">Requiere revisión</button></div>
         <p class="error" id="val-error" role="alert"></p>
-        <div class="btn-row"><button type="submit" class="btn btn--primary">Validar ruta</button><button type="button" class="btn btn--secondary" id="val-review">Requiere revisión</button></div>
       </form>`}
       <button type="button" class="link-btn" style="margin-top:1rem" data-edit-route="${r.id}">Editar ruta</button>`;
     const form = $('#val-form');

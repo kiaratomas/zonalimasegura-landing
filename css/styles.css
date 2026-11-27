@@ -508,7 +508,11 @@ button.item:hover { border-color: var(--line); }
 
 /* Vista por perfil: solo se ve la sección del perfil elegido */
 .profile-section:not(.is-current) { display: none; }
-body[data-perfil] .hero, body[data-perfil] .context { display: none; }
+body[data-perfil] .context, body[data-perfil] .hero > .container:first-child, body[data-perfil] .profile-card, body[data-perfil] .hero-copy > :not(h1) { display: none; }
+/* En la vista por perfil el título principal (H1) se oculta solo a la vista y sigue disponible para lectores de pantalla */
+body[data-perfil] .hero { padding: 0; }
+body[data-perfil] .hero-grid { display: block; }
+body[data-perfil] .hero h1 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .back-link { display: inline-block; margin-bottom: 1rem; font-weight: 600; color: var(--navy); }
 
 /* Aviso para quien llega a hacer la prueba de usabilidad */
